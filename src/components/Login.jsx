@@ -4,13 +4,12 @@ import { useNavigate } from "react-router-dom";
 export default function Login({ onLoginSuccess, isLightTheme }) {
   const navigate = useNavigate();
 
-  // State Form Login
   const [userType, setUserType] = useState("");
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Data Admin Frontend (Statis Akun PBL)
+  // Data Admin Frontend
   const adminUsers = [
     {
       id: "3312511048",
@@ -35,7 +34,7 @@ export default function Login({ onLoginSuccess, isLightTheme }) {
     },
   ];
 
-  // Mengambil Data Dosen/Inventor secara Dinamis dari LocalStorage
+  // Fungsi Mengambil Daftar Dosen yang Selalu Sinkron dari LocalStorage
   const getDosenList = () => {
     const defaultDosen = [
       {
@@ -54,13 +53,20 @@ export default function Login({ onLoginSuccess, isLightTheme }) {
         email: "ahmad.hamim@polibatam.ac.id",
         status: "Aktif",
       },
-      // Menambahkan ID contoh agar bisa dicoba langsung jika diinginkan
       {
         id: "123456780",
         password: "12345678",
         role: "Dosen / Inventor",
-        name: "Dosen Penguji / Contoh",
-        email: "dosen.test@polibatam.ac.id",
+        name: "Samuel Ambar Pasaribu, M.Kom.",
+        email: "pasaribusamuelambar@gmail.com",
+        status: "Aktif",
+      },
+      {
+        id: "2000781",
+        password: "12345678",
+        role: "Dosen / Inventor",
+        name: "Ir. Jokowi",
+        email: "jokowi@polibatam.ac.id",
         status: "Aktif",
       },
     ];
@@ -70,23 +76,25 @@ export default function Login({ onLoginSuccess, isLightTheme }) {
       if (storedUsers) {
         const parsedUsers = JSON.parse(storedUsers);
         if (Array.isArray(parsedUsers) && parsedUsers.length > 0) {
-          const localDosen = parsedUsers
-            .filter((item) => {
-              const r = String(item.role || "").toLowerCase();
-              return !r || r.includes("dosen") || r.includes("inventor");
-            })
-            .map((item) => ({
-              id: String(item.id || item.nip || item.nidn || item.username || "").trim(),
-              password: item.passwordTerakhir || item.password || "12345678",
-              role: item.role || "Dosen / Inventor",
-              name: item.nama || item.name || "Dosen Inventor",
-              email: item.email || "",
-              status: item.status || "Aktif",
-            }));
+          const localDosen = parsedUsers.map((item) => ({
+            id: String(item.id || "").trim(),
+            password: String(
+              item.passwordTerakhir || item.password || "",
+            ).trim(),
+            role: "Dosen / Inventor",
+            name: item.nama || item.name || "Dosen Inventor",
+            email: item.email || "",
+            status: item.status || "Aktif",
+          }));
 
           const combined = [...defaultDosen];
           localDosen.forEach((ld) => {
-            if (ld.id && !combined.some((d) => String(d.id).trim() === ld.id)) {
+            const index = combined.findIndex(
+              (d) => String(d.id).trim() === ld.id,
+            );
+            if (index !== -1) {
+              combined[index] = ld;
+            } else {
               combined.push(ld);
             }
           });
@@ -95,7 +103,7 @@ export default function Login({ onLoginSuccess, isLightTheme }) {
         }
       }
     } catch (error) {
-      console.error("Gagal membaca data dosen dari localStorage:", error);
+      console.error("Gagal membaca LocalStorage:", error);
     }
 
     return defaultDosen;
@@ -105,21 +113,20 @@ export default function Login({ onLoginSuccess, isLightTheme }) {
     e.preventDefault();
     setErrorMessage("");
 
-    // Validasi Pilihan Jenis User
     if (!userType) {
       setErrorMessage("Silakan pilih jenis user terlebih dahulu!");
       return;
     }
 
-    // Validasi Form Kosong
     if (!id.trim() || !password.trim()) {
       setErrorMessage("ID dan Password tidak boleh kosong!");
       return;
     }
 
     const inputId = id.trim();
+    const inputPassword = password.trim();
 
-    // 1. Process Login Role Admin
+    // 1. Process Login Admin
     if (userType === "admin") {
       const foundAdmin = adminUsers.find((u) => u.id === inputId);
 
@@ -128,7 +135,7 @@ export default function Login({ onLoginSuccess, isLightTheme }) {
         return;
       }
 
-      if (foundAdmin.password !== password) {
+      if (foundAdmin.password !== inputPassword) {
         setErrorMessage("Password Admin yang Anda masukkan salah!");
         return;
       }
@@ -138,27 +145,30 @@ export default function Login({ onLoginSuccess, isLightTheme }) {
 
       navigate("/admin-dashboard");
     }
-    // 2. Process Login Role Dosen (Inventor)
+    // 2. Process Login Dosen
     else if (userType === "dosen") {
       const dosenUsers = getDosenList();
-      const foundDosen = dosenUsers.find((u) => String(u.id).trim() === inputId);
+      const foundDosen = dosenUsers.find(
+        (u) => String(u.id).trim() === inputId,
+      );
 
       if (!foundDosen) {
         setErrorMessage(
-          "ID Dosen tidak terdaftar! Pastikan Admin telah menambahkan data di menu Kelola Pengguna."
+          "ID Dosen tidak terdaftar! Pastikan Admin telah menambahkan data di menu Kelola Pengguna.",
         );
         return;
       }
 
-      // Cek Status Akun
+      // Cek Status Akun Non-Aktif
       if (foundDosen.status === "Non-Aktif") {
         setErrorMessage(
-          "Akun Dosen Anda dalam status Non-Aktif. Silakan hubungi Admin Sentra KI!"
+          "Akun Dosen Anda dalam status Non-Aktif. Silakan hubungi Admin Sentra HKI!",
         );
         return;
       }
 
-      if (foundDosen.password !== password) {
+      // Cek Validasi Password
+      if (foundDosen.password !== inputPassword) {
         setErrorMessage("Password Dosen yang Anda masukkan salah!");
         return;
       }
@@ -166,7 +176,7 @@ export default function Login({ onLoginSuccess, isLightTheme }) {
       localStorage.setItem("currentUser", JSON.stringify(foundDosen));
       if (onLoginSuccess) onLoginSuccess(foundDosen);
 
-      navigate("/dosen-dashboard");
+      navigate("/dosen/overview");
     }
   };
 
@@ -183,7 +193,6 @@ export default function Login({ onLoginSuccess, isLightTheme }) {
             : "bg-[#140d24] border-purple-900/40"
         }`}
       >
-        {/* Header Title */}
         <div className="text-center mb-6">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 via-purple-600 to-emerald-500 flex items-center justify-center font-bold text-white text-xl shadow-lg shadow-purple-900/40 mx-auto mb-3">
             IP
@@ -200,7 +209,6 @@ export default function Login({ onLoginSuccess, isLightTheme }) {
           </p>
         </div>
 
-        {/* Notifikasi Pesan Error */}
         {errorMessage && (
           <div className="mb-5 p-3.5 rounded-xl bg-red-500/10 border border-red-500/40 flex items-start gap-3 text-red-500 text-xs font-medium">
             <svg
@@ -217,7 +225,6 @@ export default function Login({ onLoginSuccess, isLightTheme }) {
         )}
 
         <form onSubmit={handleLogin} className="space-y-4">
-          {/* Select Dropdown Jenis User */}
           <div>
             <select
               value={userType}
@@ -239,11 +246,10 @@ export default function Login({ onLoginSuccess, isLightTheme }) {
             </select>
           </div>
 
-          {/* Input ID */}
           <div className="relative flex items-center">
             <input
               type="text"
-              placeholder="ID"
+              placeholder="ID / NIP"
               value={id}
               onChange={(e) => setId(e.target.value)}
               className={`w-full pl-4 pr-11 py-3 text-sm rounded-xl border focus:outline-none transition ${
@@ -259,7 +265,6 @@ export default function Login({ onLoginSuccess, isLightTheme }) {
             </div>
           </div>
 
-          {/* Input Password */}
           <div className="relative flex items-center">
             <input
               type="password"
@@ -279,7 +284,6 @@ export default function Login({ onLoginSuccess, isLightTheme }) {
             </div>
           </div>
 
-          {/* Tombol Login */}
           <button
             type="submit"
             className="w-full py-3.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 hover:opacity-90 transition shadow-lg shadow-purple-900/30 active:scale-[0.99] cursor-pointer"
@@ -287,31 +291,6 @@ export default function Login({ onLoginSuccess, isLightTheme }) {
             Login
           </button>
         </form>
-
-        {/* Panduan Pengguna PDF */}
-        <div className="mt-6 pt-4 border-t border-purple-900/30 text-center">
-          <a
-            href="/panduan-pengguna.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 text-xs font-medium text-emerald-400 hover:text-emerald-300 underline underline-offset-4 transition"
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            Panduan Pengguna IP ASSETS CATALOG (PDF)
-          </a>
-        </div>
       </div>
     </div>
   );

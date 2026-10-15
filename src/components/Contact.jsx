@@ -3,7 +3,6 @@ import samuelFoto from "../assets/Samuel ambar pasaribu.png";
 import farhanFoto from "../assets/M Hoirul Farhan.png";
 
 export default function Contact({ isLightTheme }) {
-  // State untuk form input
   const [formData, setFormData] = useState({
     nama: "",
     email: "",
@@ -40,19 +39,16 @@ export default function Contact({ isLightTheme }) {
     },
   ];
 
-  // Handle perubahan input
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle submit ke Backend
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setAlert({ show: false, type: "", message: "" });
 
     try {
-      // Sesuaikan URL ini dengan endpoint API backend kamu (Laravel / Node.js)
       const response = await fetch("http://localhost:8000/api/messages", {
         method: "POST",
         headers: {
@@ -62,6 +58,8 @@ export default function Contact({ isLightTheme }) {
         body: JSON.stringify(formData),
       });
 
+      const result = await response.json();
+
       if (response.ok) {
         setAlert({
           show: true,
@@ -70,13 +68,14 @@ export default function Contact({ isLightTheme }) {
         });
         setFormData({ nama: "", email: "", pesan: "" });
       } else {
-        throw new Error("Gagal mengirim pesan.");
+        throw new Error(result.message || "Gagal mengirim pesan.");
       }
     } catch (error) {
       setAlert({
         show: true,
         type: "error",
-        message: "Terjadi kesalahan. Silakan coba lagi.",
+        message:
+          "Gagal terhubung ke Server API. Pastikan backend Node.js (port 8000) sudah berjalan.",
       });
     } finally {
       setLoading(false);
@@ -138,7 +137,9 @@ export default function Contact({ isLightTheme }) {
                 NIM: {admin.nim}
               </p>
 
+              {/* LOGO SOSIAL MEDIA LENGKAP */}
               <div className="flex items-center justify-center gap-5 w-full mt-auto pt-4 border-t border-slate-200/40">
+                {/* Logo GitHub */}
                 <a
                   href={admin.github}
                   target="_blank"
@@ -155,6 +156,7 @@ export default function Contact({ isLightTheme }) {
                   </svg>
                 </a>
 
+                {/* Logo Instagram */}
                 <a
                   href={admin.instagram}
                   target="_blank"
@@ -171,6 +173,7 @@ export default function Contact({ isLightTheme }) {
                   </svg>
                 </a>
 
+                {/* Logo WhatsApp */}
                 <a
                   href={admin.wa}
                   target="_blank"
@@ -203,13 +206,12 @@ export default function Contact({ isLightTheme }) {
             Kirim <span className="text-emerald-500">Pesan</span>
           </h3>
 
-          {/* Notifikasi Pop-up/Alert */}
           {alert.show && (
             <div
-              className={`p-4 rounded-lg mb-6 text-sm font-medium ${
+              className={`p-4 rounded-lg mb-6 text-sm font-medium border ${
                 alert.type === "success"
-                  ? "bg-emerald-500/20 border border-emerald-500 text-emerald-300"
-                  : "bg-red-500/20 border border-red-500 text-red-300"
+                  ? "bg-emerald-50 border-emerald-300 text-emerald-700"
+                  : "bg-rose-50 border-rose-300 text-rose-700"
               }`}
             >
               {alert.message}
@@ -268,7 +270,7 @@ export default function Contact({ isLightTheme }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 text-white rounded-lg font-semibold hover:opacity-90 transition shadow-lg disabled:opacity-50"
+              className="w-full py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 text-white rounded-lg font-semibold hover:opacity-90 transition shadow-lg disabled:opacity-50 cursor-pointer"
             >
               {loading ? "Mengirim..." : "Kirim Pesan"}
             </button>

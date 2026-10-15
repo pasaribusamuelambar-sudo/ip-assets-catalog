@@ -1,28 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import About from "./components/About";
 import Contact from "./components/Contact";
 import Login from "./components/Login";
-
-// Import Dashboard dari folder masing-masing
 import DashboardAdmin from "./components/Admin Sentra KI/DashboardAdmin";
 import DashboardDosenInventor from "./components/Dosen Inventor/DashboardDosenInventor";
 
 export default function App() {
-  const [currentUser, setCurrentUser] = useState(null);
+  // Read current logged-in user synchronously from localStorage
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const savedUser = localStorage.getItem("currentUser");
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch (e) {
+      console.error("Gagal membaca currentUser dari localStorage:", e);
+      return null;
+    }
+  });
+
   const [isLightTheme, setIsLightTheme] = useState(false);
   const location = useLocation();
 
-  useEffect(() => {
-    const savedUser = localStorage.getItem("currentUser");
-    if (savedUser) {
-      setCurrentUser(JSON.parse(savedUser));
-    }
-  }, []);
-
   const handleLoginSuccess = (userData) => {
+    localStorage.setItem("currentUser", JSON.stringify(userData));
     setCurrentUser(userData);
   };
 
@@ -35,10 +37,11 @@ export default function App() {
     setIsLightTheme((prev) => !prev);
   };
 
-  // Cek apakah halaman saat ini adalah Dashboard (Admin / Dosen)
+  // Check if current route is part of dashboard area
   const isDashboardRoute =
     location.pathname.startsWith("/admin-dashboard") ||
-    location.pathname.startsWith("/dosen-dashboard");
+    location.pathname.startsWith("/dosen-dashboard") ||
+    location.pathname.startsWith("/dosen");
 
   return (
     <div
@@ -46,7 +49,6 @@ export default function App() {
         isLightTheme ? "bg-slate-50 text-slate-800" : "bg-[#0b0713] text-white"
       }`}
     >
-      {/* TAMPILKAN NAVBAR HANYA DI HALAMAN PUBLIK (Bukan Dashboard Admin/Dosen) */}
       {!isDashboardRoute && (
         <Navbar
           user={currentUser}
@@ -56,9 +58,9 @@ export default function App() {
         />
       )}
 
-      {/* Rute Halaman */}
       <main className="flex-grow">
         <Routes>
+          {/* Landing Page Utama */}
           <Route path="/" element={<Hero isLightTheme={isLightTheme} />} />
           <Route
             path="/about"
@@ -68,19 +70,29 @@ export default function App() {
             path="/contact"
             element={<Contact isLightTheme={isLightTheme} />}
           />
+
+          {/* Rute Login: Jika sudah login, otomatis dialihkan ke Dashboard sesuai Role */}
           <Route
             path="/login"
             element={
-              <Login
-                onLoginSuccess={handleLoginSuccess}
-                isLightTheme={isLightTheme}
-              />
+              currentUser ? (
+                currentUser.role === "Admin" ? (
+                  <Navigate to="/admin-dashboard" replace />
+                ) : (
+                  <Navigate to="/dosen/overview" replace />
+                )
+              ) : (
+                <Login
+                  onLoginSuccess={handleLoginSuccess}
+                  isLightTheme={isLightTheme}
+                />
+              )
             }
           />
 
-          {/* Rute Terproteksi untuk Dashboard Admin */}
+          {/* Admin Dashboard */}
           <Route
-            path="/admin-dashboard"
+            path="/admin-dashboard/*"
             element={
               currentUser && currentUser.role === "Admin" ? (
                 <DashboardAdmin
@@ -93,9 +105,9 @@ export default function App() {
             }
           />
 
-          {/* Rute Terproteksi untuk Dashboard Dosen */}
+          {/* Dosen / Inventor Dashboard */}
           <Route
-            path="/dosen-dashboard/*"
+            path="/dosen/*"
             element={
               currentUser &&
               (currentUser.role === "Dosen" ||
@@ -111,10 +123,15 @@ export default function App() {
               )
             }
           />
+
+          {/* Fallback Rute Dosen Dashboard */}
+          <Route
+            path="/dosen-dashboard/*"
+            element={<Navigate to="/dosen/overview" replace />}
+          />
         </Routes>
       </main>
 
-      {/* TAMPILKAN FOOTER HANYA DI HALAMAN PUBLIK */}
       {!isDashboardRoute && (
         <footer
           className={`py-6 text-center text-sm border-t ${

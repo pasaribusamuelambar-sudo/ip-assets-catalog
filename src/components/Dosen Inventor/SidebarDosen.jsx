@@ -1,108 +1,354 @@
-import React from "react";
+import React, { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 
-export default function SidebarDosen({
-  activeMenu,
-  setActiveMenu,
-  isLightTheme,
-  onLogout,
-}) {
-  const menuItems = [
+// Material UI Components
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Divider from "@mui/material/Divider";
+
+// Material UI Icons
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import PostAddIcon from "@mui/icons-material/PostAdd";
+import FolderSpecialIcon from "@mui/icons-material/FolderSpecial";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import LogoutIcon from "@mui/icons-material/Logout";
+
+const DRAWER_WIDTH = 260;
+
+export default function SidebarDosen({ onLogout }) {
+  const navigate = useNavigate();
+
+  // State Pop-up Menu Profil Bawah
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+
+  const handleOpenMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogoutAction = () => {
+    handleCloseMenu();
+    if (onLogout) onLogout();
+  };
+
+  // Ambil Data Dosen Aktif dari LocalStorage
+  const currentUser = JSON.parse(localStorage.getItem("currentUser")) || {
+    name: "Samuel Ambar Pasaribu, M.Kom.",
+    email: "pasaribusamuelambar@gmail.com",
+    id: "3312511048",
+  };
+
+  // Navigasi Menu Dosen (Sesuai File Komponen Proyek)
+  const dosenNavItems = [
     {
-      id: "overview",
-      label: "Dashboard & Ringkasan",
-      icon: (
-        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8v-10h-8v10zm0-18v6h8V3h-8z" />
-        </svg>
-      ),
+      text: "Dashboard & Ringkasan",
+      path: "/dosen/overview",
+      icon: <DashboardIcon />,
     },
     {
-      id: "pengajuan",
-      label: "Pengajuan HKI Baru",
-      icon: (
-        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-        </svg>
-      ),
+      text: "Form Pengajuan HKI",
+      path: "/dosen/pengajuan",
+      icon: <PostAddIcon />,
     },
     {
-      id: "katalog-saya",
-      label: "Aset & Hak Cipta Saya",
-      icon: (
-        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z" />
-        </svg>
-      ),
+      text: "Aset & Hak Cipta Saya",
+      path: "/dosen/katalog-saya",
+      icon: <FolderSpecialIcon />,
     },
     {
-      id: "profil",
-      label: "Profil & Keamanan",
-      icon: (
-        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-        </svg>
-      ),
+      text: "Profil & Portofolio BKD",
+      path: "/dosen/profil",
+      icon: <AccountCircleIcon />,
     },
   ];
 
   return (
-    <aside
-      className={`w-64 flex-shrink-0 border-r flex flex-col justify-between min-h-screen transition-colors duration-300 ${
-        isLightTheme
-          ? "bg-white border-slate-200 text-slate-800"
-          : "bg-[#0f091c] border-purple-900/40 text-white"
-      }`}
-    >
-      <div>
-        {/* Brand Header Sidebar */}
-        <div className="p-5 border-b border-purple-900/30 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center font-bold text-white text-sm shadow-md">
-            IP
-          </div>
-          <div>
-            <div className="font-bold text-sm tracking-wide">SENTRA HKI</div>
-            <div className="text-[10px] text-purple-400">
-              Politeknik Negeri Batam
-            </div>
-          </div>
-        </div>
-
-        {/* Daftar Menu Utama */}
-        <nav className="p-4 space-y-1.5">
-          {menuItems.map((item) => {
-            const isActive = activeMenu === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActiveMenu(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold transition cursor-pointer ${
-                  isActive
-                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-purple-900/30"
-                    : isLightTheme
-                      ? "text-slate-600 hover:bg-slate-100"
-                      : "text-slate-400 hover:bg-[#19102e] hover:text-white"
-                }`}
+    <Box component="nav" sx={{ width: DRAWER_WIDTH, flexShrink: 0 }}>
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: DRAWER_WIDTH,
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: DRAWER_WIDTH,
+            boxSizing: "border-box",
+            backgroundColor: "#0d1117",
+            color: "#e6edf3",
+            borderRight: "1px solid #21262d",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            padding: "16px 12px",
+          },
+        }}
+      >
+        {/* HEADER BRAND & NAVIGASI FITUR DOSEN */}
+        <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
+          {/* LOGO BRAND SENTRA HKI */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              px: 1,
+              pb: 2,
+              mb: 2,
+              borderBottom: "1px solid #21262d",
+            }}
+          >
+            <Box
+              sx={{
+                width: 36,
+                height: 36,
+                borderRadius: "10px",
+                background: "linear-gradient(135deg, #2563eb, #7c3aed)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 900,
+                color: "#ffffff",
+                fontSize: "14px",
+              }}
+            >
+              IP
+            </Box>
+            <Box>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: 800,
+                  color: "#ffffff",
+                  fontSize: "14px",
+                  lineHeight: 1.2,
+                }}
               >
-                {item.icon}
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </nav>
-      </div>
+                SENTRA HKI
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: "#38bdf8",
+                  fontSize: "10px",
+                  fontWeight: 600,
+                  tracking: 1,
+                }}
+              >
+                POLITEKNIK NEGERI BATAM
+              </Typography>
+            </Box>
+          </Box>
 
-      {/* Area Bawah Sidebar: Tombol Keluar */}
-      <div className="p-4 border-t border-purple-900/30">
-        <button
-          onClick={onLogout}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-red-400 hover:text-white hover:bg-red-600/80 transition duration-200"
+          <Typography
+            variant="caption"
+            sx={{
+              px: 1.5,
+              color: "#8b949e",
+              fontWeight: 700,
+              fontSize: "10px",
+              textTransform: "uppercase",
+              letterSpacing: "0.5px",
+              display: "block",
+              mb: 1,
+            }}
+          >
+            Menu Utama Dosen
+          </Typography>
+
+          {/* LIST MENU DOSEN */}
+          <List
+            disablePadding
+            sx={{ gap: 0.5, display: "flex", flexDirection: "column" }}
+          >
+            {dosenNavItems.map((item) => (
+              <ListItem key={item.text} disablePadding>
+                <ListItemButton
+                  component={NavLink}
+                  to={item.path}
+                  sx={{
+                    borderRadius: "10px",
+                    color: "#9198a1",
+                    py: 1.2,
+                    px: 1.5,
+                    "&.active": {
+                      backgroundColor: "#21262d",
+                      color: "#ffffff",
+                      fontWeight: 700,
+                      "& .MuiListItemIcon-root": {
+                        color: "#38bdf8",
+                      },
+                    },
+                    "&:hover": {
+                      backgroundColor: "#161b22",
+                      color: "#ffffff",
+                      "& .MuiListItemIcon-root": {
+                        color: "#ffffff",
+                      },
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ color: "#8b949e", minWidth: 36 }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      fontSize: "13px",
+                      fontWeight: 600,
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+
+        {/* PROFILE CARD & POP-UP MENU (BAGIAN BAWAH) */}
+        <Box
+          sx={{
+            pt: 2,
+            mt: 1,
+            borderTop: "1px solid #21262d",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
         >
-          <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
-          </svg>
-          <span>Keluar dari Akun</span>
-        </button>
-      </div>
-    </aside>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              overflow: "hidden",
+            }}
+          >
+            <Avatar
+              sx={{
+                width: 36,
+                height: 36,
+                bgcolor: "#2563eb",
+                fontSize: "14px",
+                fontWeight: "bold",
+              }}
+            >
+              {currentUser.name ? currentUser.name.charAt(0) : "D"}
+            </Avatar>
+            <Box sx={{ overflow: "hidden" }}>
+              <Typography
+                variant="subtitle2"
+                noWrap
+                sx={{ color: "#ffffff", fontWeight: 700, fontSize: "13px" }}
+              >
+                {currentUser.name}
+              </Typography>
+              <Typography
+                variant="caption"
+                noWrap
+                sx={{ color: "#8b949e", fontSize: "11px", display: "block" }}
+              >
+                {currentUser.email || `NIP: ${currentUser.id}`}
+              </Typography>
+            </Box>
+          </Box>
+
+          <IconButton
+            onClick={handleOpenMenu}
+            size="small"
+            sx={{
+              color: "#8b949e",
+              border: "1px solid #30363d",
+              borderRadius: "8px",
+              p: 0.5,
+              "&:hover": { backgroundColor: "#21262d", color: "#ffffff" },
+            }}
+          >
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
+
+          {/* POP-UP MENU MATERIAL UI */}
+          <Menu
+            anchorEl={anchorEl}
+            open={openMenu}
+            onClose={handleCloseMenu}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+            PaperProps={{
+              elevation: 4,
+              sx: {
+                backgroundColor: "#0d1117",
+                color: "#ffffff",
+                border: "1px solid #30363d",
+                borderRadius: "12px",
+                mt: -1,
+                minWidth: 180,
+                boxShadow: "0px 10px 30px rgba(0,0,0,0.5)",
+                "& .MuiMenuItem-root": {
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  py: 1,
+                  px: 2,
+                  "&:hover": {
+                    backgroundColor: "#161b22",
+                  },
+                },
+              },
+            }}
+          >
+            <MenuItem
+              onClick={() => {
+                handleCloseMenu();
+                navigate("/dosen/profil");
+              }}
+            >
+              Profil BKD Saya
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleCloseMenu();
+                navigate("/dosen/katalog-saya");
+              }}
+            >
+              Katalog Aset Saya
+            </MenuItem>
+            <Divider sx={{ borderColor: "#21262d", my: 0.5 }} />
+            <MenuItem
+              onClick={handleLogoutAction}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                color: "#f87171",
+              }}
+            >
+              <span>Logout</span>
+              <LogoutIcon
+                fontSize="small"
+                sx={{ fontSize: 16, color: "#f87171" }}
+              />
+            </MenuItem>
+          </Menu>
+        </Box>
+      </Drawer>
+    </Box>
   );
 }

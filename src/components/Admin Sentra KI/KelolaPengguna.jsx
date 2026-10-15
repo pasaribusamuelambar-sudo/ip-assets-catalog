@@ -7,7 +7,7 @@ const initialUsers = [
     nama: "Samuel Ambar Pasaribu, M.Kom.",
     email: "pasaribusamuelambar@gmail.com",
     jurusan: "Teknik Informatika",
-    role: "Dosen Inventor",
+    role: "Dosen / Inventor",
     status: "Aktif",
     passwordTerakhir: "12345678",
     riwayatPassword: [{ tanggal: "2026-01-01", status: "Dibuat Sistem" }],
@@ -25,7 +25,7 @@ const initialUsers = [
     nama: "Dr. Eng. Widya Putri, M.T.",
     email: "widya@polibatam.ac.id",
     jurusan: "Teknik Informatika",
-    role: "Dosen Inventor",
+    role: "Dosen / Inventor",
     status: "Non-Aktif",
     passwordTerakhir: "Batam2026!#",
     riwayatPassword: [
@@ -46,7 +46,7 @@ const initialUsers = [
     nama: "Ahmad Hamim Thohari, S.S.T., M.T.",
     email: "ahmad.hamim@polibatam.ac.id",
     jurusan: "Teknik Elektro",
-    role: "Dosen Inventor",
+    role: "Dosen / Inventor",
     status: "Aktif",
     passwordTerakhir: "P3M_Polibatam2026",
     riwayatPassword: [{ tanggal: "2026-02-01", status: "Dibuat Sistem" }],
@@ -64,12 +64,13 @@ const initialUsers = [
 export default function UserManagement() {
   const [activeTab, setActiveTab] = useState("users"); // 'users' atau 'archived'
 
-  // Load state users
+  // Load state users dari LocalStorage
   const [users, setUsers] = useState(() => {
     const savedData = localStorage.getItem("ip_catalog_users");
     if (savedData) {
       try {
-        return JSON.parse(savedData);
+        const parsed = JSON.parse(savedData);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       } catch (e) {
         console.error(e);
       }
@@ -96,7 +97,7 @@ export default function UserManagement() {
 
   // State Modal
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null); // modal profil
+  const [selectedUser, setSelectedUser] = useState(null); // modal profil & monitoring password
   const [editUser, setEditUser] = useState(null); // modal edit
 
   // Form Data Tambah Pengguna
@@ -125,7 +126,7 @@ export default function UserManagement() {
   useEffect(() => {
     localStorage.setItem(
       "ip_catalog_archived_users",
-      JSON.stringify(archivedUsers),
+      JSON.stringify(archivedUsers)
     );
   }, [archivedUsers]);
 
@@ -141,27 +142,37 @@ export default function UserManagement() {
     setEditFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Tambah User Baru
+  // Tambah User Baru Dosen Inventor (Format Baku untuk Login & App.jsx)
   const handleAddUser = (e) => {
     e.preventDefault();
     if (
-      !formData.id ||
-      !formData.nama ||
-      !formData.email ||
-      !formData.passwordAwal
+      !formData.id.trim() ||
+      !formData.nama.trim() ||
+      !formData.email.trim() ||
+      !formData.passwordAwal.trim()
     ) {
-      alert("Mohon lengkapi semua field!");
+      alert("Mohon lengkapi semua kolom!");
+      return;
+    }
+
+    const cleanId = formData.id.trim();
+
+    // Cek Duplikasi ID
+    const exists = users.some((u) => String(u.id).trim() === cleanId);
+    if (exists) {
+      alert(`ID/NIP "${cleanId}" sudah terdaftar dalam sistem!`);
       return;
     }
 
     const newUser = {
-      id: formData.id.trim(),
+      id: cleanId,
       nama: formData.nama.trim(),
       email: formData.email.trim(),
       jurusan: formData.jurusan,
-      role: "Dosen Inventor",
+      role: "Dosen / Inventor", // Role baku agar langsung dapat diakses pada App.jsx
       status: "Aktif",
       passwordTerakhir: formData.passwordAwal.trim(),
+      password: formData.passwordAwal.trim(),
       riwayatPassword: [
         {
           tanggal: new Date().toISOString().split("T")[0],
@@ -182,6 +193,7 @@ export default function UserManagement() {
       passwordAwal: "",
     });
     setShowAddModal(false);
+    alert("Dosen Inventor berhasil ditambahkan! Akun langsung siap digunakan untuk Login.");
   };
 
   // Buka Modal Edit
@@ -225,6 +237,7 @@ export default function UserManagement() {
           jurusan: editFormData.jurusan,
           status: editFormData.status,
           passwordTerakhir: newPassword,
+          password: newPassword,
           riwayatPassword: updatedHistory,
         };
       }
@@ -239,7 +252,8 @@ export default function UserManagement() {
   const toggleUserStatus = (id) => {
     const updatedUsers = users.map((u) => {
       if (u.id === id) {
-        return { ...u, status: u.status === "Aktif" ? "Non-Aktif" : "Aktif" };
+        const newStatus = u.status === "Aktif" ? "Non-Aktif" : "Aktif";
+        return { ...u, status: newStatus };
       }
       return u;
     });
@@ -250,7 +264,7 @@ export default function UserManagement() {
   const handleDeleteUser = (userToDelete) => {
     if (
       window.confirm(
-        `Apakah Anda yakin ingin menghapus akun "${userToDelete.nama}"? \n\nAkun akan diblokir total dari login web, namun history karya KI akan tetap tersimpan di Arsip Admin.`,
+        `Apakah Anda yakin ingin menghapus akun "${userToDelete.nama}"?\n\nAkun akan diblokir dari login, namun seluruh riwayat karya Kekayaan Intelektual (HKI) dosen ini tetap diarsipkan.`
       )
     ) {
       const archivedRecord = {
@@ -270,7 +284,7 @@ export default function UserManagement() {
   const filteredUsers = users.filter((u) => {
     const matchesSearch =
       u.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      String(u.id).toLowerCase().includes(searchTerm.toLowerCase()) ||
       u.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "Semua" || u.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -278,17 +292,16 @@ export default function UserManagement() {
 
   return (
     <div className="p-6 bg-slate-50 min-h-screen font-sans text-slate-800">
-      {/* Header & Tab Selector */}
+      {/* Header & Selector Tab */}
       <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-slate-900">Kelola Pengguna</h1>
           <p className="text-xs text-slate-500">
-            Manajemen akun Dosen Inventor, monitoring kredensial, dan arsip hak
-            kekayaan intelektual.
+            Manajemen akun Dosen Inventor, monitoring kredensial/password, serta arsip aset Kekayaan Intelektual.
           </p>
         </div>
 
-        {/* Tab Buttons */}
+        {/* Tombol Tab */}
         <div className="flex bg-slate-200/70 p-1 rounded-xl w-fit">
           <button
             onClick={() => setActiveTab("users")}
@@ -384,18 +397,12 @@ export default function UserManagement() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-100/70 text-slate-700 text-xs uppercase tracking-wider border-b border-slate-200">
-                    <th className="py-3.5 px-4 font-semibold">
-                      DOSEN INVENTOR
-                    </th>
+                    <th className="py-3.5 px-4 font-semibold">DOSEN INVENTOR</th>
                     <th className="py-3.5 px-4 font-semibold">ID</th>
                     <th className="py-3.5 px-4 font-semibold">JURUSAN</th>
                     <th className="py-3.5 px-4 font-semibold">STATUS AKUN</th>
-                    <th className="py-3.5 px-4 font-semibold">
-                      MONITORING PASSWORD
-                    </th>
-                    <th className="py-3.5 px-4 font-semibold text-center">
-                      AKSI
-                    </th>
+                    <th className="py-3.5 px-4 font-semibold">MONITORING PASSWORD</th>
+                    <th className="py-3.5 px-4 font-semibold text-center">AKSI</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 text-sm">
@@ -432,17 +439,17 @@ export default function UserManagement() {
                         </td>
                         <td className="py-3.5 px-4">
                           <span className="font-mono bg-slate-100 px-2 py-1 rounded-lg border border-slate-200 text-xs text-slate-800">
-                            {user.passwordTerakhir}
+                            {user.passwordTerakhir || user.password}
                           </span>
                         </td>
 
-                        {/* Kolom Aksi dengan Ikon Simbol Modern & Compact */}
+                        {/* Kolom Tombol Aksi */}
                         <td className="py-3.5 px-4 text-center">
                           <div className="flex justify-center items-center gap-1.5">
                             {/* Tombol Lihat Profil */}
                             <button
                               onClick={() => setSelectedUser(user)}
-                              title="Lihat Profil"
+                              title="Lihat Profil & Monitoring Password"
                               className="p-2 rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-100 transition cursor-pointer"
                             >
                               <svg
@@ -469,7 +476,7 @@ export default function UserManagement() {
                             {/* Tombol Edit Data */}
                             <button
                               onClick={() => openEditModal(user)}
-                              title="Edit Data"
+                              title="Edit Data Dosen"
                               className="p-2 rounded-lg text-amber-600 bg-amber-50 hover:bg-amber-100 transition cursor-pointer"
                             >
                               <svg
@@ -487,12 +494,12 @@ export default function UserManagement() {
                               </svg>
                             </button>
 
-                            {/* Tombol Toggle Aktif / Nonaktifkan */}
+                            {/* Tombol Non-aktifkan / Aktifkan */}
                             <button
                               onClick={() => toggleUserStatus(user.id)}
                               title={
                                 user.status === "Aktif"
-                                  ? "Nonaktifkan Akun"
+                                  ? "Non-aktifkan Akun"
                                   : "Aktifkan Akun"
                               }
                               className={`p-2 rounded-lg transition cursor-pointer ${
@@ -562,8 +569,7 @@ export default function UserManagement() {
                         colSpan="6"
                         className="py-8 text-center text-slate-400"
                       >
-                        Tidak ada data dosen yang sesuai dengan
-                        pencarian/filter.
+                        Tidak ada data dosen yang sesuai.
                       </td>
                     </tr>
                   )}
@@ -573,27 +579,20 @@ export default function UserManagement() {
           </div>
         </>
       ) : (
-        /* Tabel Arsip Akun Dihapus & History Karya */
+        /* Tabel Arsip Dosen Dihapus & History Karya */
         <div className="bg-white rounded-xl shadow-xs border border-slate-200/80 overflow-hidden">
           <div className="p-4 bg-amber-50/60 border-b border-amber-200 text-xs text-amber-800">
-            <strong>Catatan Keamanan:</strong> Akun di bawah ini telah dihapus.
-            Pengguna terkait <strong>TIDAK BISA LOGIN</strong> ke sistem, namun
-            seluruh riwayat karya kekayaan intelektual (HKI) tetap diarsipkan
-            secara permanen untuk kepentingan administrasi perguruan tinggi.
+            <strong>Catatan Keamanan:</strong> Akun di bawah ini telah dihapus dan <strong>TIDAK BISA LOGIN</strong>, namun riwayat karya Kekayaan Intelektual (HKI) dosen ini tetap tersimpan permanen di arsip perguruan tinggi.
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-100/70 text-slate-700 text-xs uppercase tracking-wider border-b border-slate-200">
-                  <th className="py-3.5 px-4 font-semibold">
-                    DOSEN INVENTOR (DIHAPUS)
-                  </th>
+                  <th className="py-3.5 px-4 font-semibold">DOSEN INVENTOR (DIHAPUS)</th>
                   <th className="py-3.5 px-4 font-semibold">ID</th>
                   <th className="py-3.5 px-4 font-semibold">JURUSAN</th>
                   <th className="py-3.5 px-4 font-semibold">TGL DIHAPUS</th>
-                  <th className="py-3.5 px-4 font-semibold">
-                    HISTORY KARYA HKI TERDAFTAR
-                  </th>
+                  <th className="py-3.5 px-4 font-semibold">HISTORY KARYA HKI TERDAFTAR</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 text-sm">
@@ -658,17 +657,17 @@ export default function UserManagement() {
         </div>
       )}
 
-      {/* Modal 1: Detail Profil & Keamanan */}
+      {/* Modal 1: Detail Profil & Monitoring Password */}
       {selectedUser && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200">
             <div className="flex justify-between items-start pb-4 border-b border-slate-200">
               <div>
                 <h3 className="text-lg font-bold text-slate-900">
-                  Profil & Keamanan Dosen Inventor
+                  Profil & Monitoring Password Dosen
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Detail akun dan catatan keamanan sistem Sentra HKI
+                  Rincian akun dan audit perubahan kata sandi
                 </p>
               </div>
               <button
@@ -687,7 +686,7 @@ export default function UserManagement() {
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2 py-1">
-                <span className="text-slate-500">ID:</span>
+                <span className="text-slate-500">ID / NIP:</span>
                 <span className="col-span-2 font-mono text-slate-800">
                   {selectedUser.id}
                 </span>
@@ -707,7 +706,7 @@ export default function UserManagement() {
               <div className="grid grid-cols-3 gap-2 py-1">
                 <span className="text-slate-500">Password Aktif:</span>
                 <span className="col-span-2 font-mono bg-amber-50 text-amber-900 border border-amber-200 px-2 py-0.5 rounded-md w-max">
-                  {selectedUser.passwordTerakhir}
+                  {selectedUser.passwordTerakhir || selectedUser.password}
                 </span>
               </div>
 
@@ -743,7 +742,7 @@ export default function UserManagement() {
         </div>
       )}
 
-      {/* Modal 2: Edit Data Kelola Pengguna */}
+      {/* Modal 2: Edit Data Dosen */}
       {editUser && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200">
@@ -790,7 +789,7 @@ export default function UserManagement() {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Email
+                  Email Instansi
                 </label>
                 <input
                   type="email"
@@ -836,19 +835,16 @@ export default function UserManagement() {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Ubah Password (Monitoring Password)
+                  Ubah Password
                 </label>
                 <input
                   type="text"
                   name="passwordBaru"
                   value={editFormData.passwordBaru}
                   onChange={handleEditInputChange}
-                  placeholder="Kosongkan jika tidak ingin mengubah password"
+                  placeholder="Kosongkan jika tidak ubah password"
                   className="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
                 />
-                <span className="text-[10px] text-slate-400 mt-1 block">
-                  Password saat ini: {editUser.passwordTerakhir}
-                </span>
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
@@ -879,20 +875,20 @@ export default function UserManagement() {
               Tambah Akun Dosen Inventor
             </h3>
             <p className="text-xs text-slate-500 mb-4">
-              Buat kredensial akun baru untuk Dosen Inventor Polibatam.
+              Buat akun Dosen Inventor baru agar dapat langsung melakukan Login.
             </p>
 
             <form onSubmit={handleAddUser} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  ID (NIP / NIDN)
+                  ID (NIP / NIDN / No. Induk)
                 </label>
                 <input
                   type="text"
                   name="id"
                   value={formData.id}
                   onChange={handleInputChange}
-                  placeholder="Contoh: 198803122019031001"
+                  placeholder="Contoh: 2000781"
                   className="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
                   required
                 />
@@ -907,7 +903,7 @@ export default function UserManagement() {
                   name="nama"
                   value={formData.nama}
                   onChange={handleInputChange}
-                  placeholder="Contoh: Dr. Eng. Widya Putri, M.T."
+                  placeholder="Contoh: Ir. Jokowi, M.T."
                   className="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
@@ -954,7 +950,7 @@ export default function UserManagement() {
                   name="passwordAwal"
                   value={formData.passwordAwal}
                   onChange={handleInputChange}
-                  placeholder="Buat password default..."
+                  placeholder="Buat password login..."
                   className="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
                   required
                 />
