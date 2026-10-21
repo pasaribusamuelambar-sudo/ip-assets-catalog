@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import ModalFormMinatLisensi from "./ModalFormMinatLisensi";
 
-// Import 4 Gambar
+// Import Gambar
 import poltekImg from "../assets/poltek.jpeg";
 import technopreneurImg from "../assets/Technopreneur-Polibatam-1.jpg";
 import pblImg from "../assets/PBL-Master-Plan-3-D-0.jpg";
@@ -11,6 +12,10 @@ export default function Hero({ isLightTheme }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // STATE UNTUK MODAL FORMULIR MINAT LISENSI
+  const [selectedAssetForLicence, setSelectedAssetForLicence] = useState(null);
+  const [isLicenceModalOpen, setIsLicenceModalOpen] = useState(false);
 
   const sliderImages = [
     {
@@ -38,7 +43,7 @@ export default function Hero({ isLightTheme }) {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentImageIndex(
-        (prevIndex) => (prevIndex + 1) % sliderImages.length,
+        (prevIndex) => (prevIndex + 1) % sliderImages.length
       );
     }, 4000);
     return () => clearInterval(timer);
@@ -50,37 +55,41 @@ export default function Hero({ isLightTheme }) {
     "Merek",
     "Desain Industri",
     "Software",
-    "Utility Model",
-    "Trade Secret",
-    "Geographical Indication",
+    "DTLST",
   ];
 
+  // DATA KATALOG ASET PUBLIK SINKRON DENGAN DATA SISTEM
   const dummyAssets = [
     {
-      id: 1,
-      title: "Sistem Presensi Berbasis Machine Learning",
-      type: "Software",
-      creator: "Dr. Ahmad Yani, M.T. & Tim",
+      id: "KI-2026-001",
+      title: "Sistem Presensi Deteksi Wajah Real-Time Berbasis AI",
+      type: "Hak Cipta",
+      creator: "Dr. Eng. Ahmad Yani, M.T.",
       year: "2026",
-      status: "Terverifikasi",
+      status: "Terdaftar (Publik)",
     },
     {
-      id: 2,
-      title: "Desain Ergonomis Kursi Laboratorium Komputer",
+      id: "KI-2026-002",
+      title: "Desain Ergonomis Meja Kerja Laboratorium Industri",
       type: "Desain Industri",
-      creator: "Budi Santoso, S.ST., M.T.",
-      year: "2025",
-      status: "Terverifikasi",
+      creator: "Samuel Ambar Pasaribu",
+      year: "2026",
+      status: "Terdaftar (Publik)",
     },
     {
-      id: 3,
-      title: "Metode Pengolahan Citra Medis Otomatis",
-      type: "Paten",
-      creator: "Prof. Hendra Wijaya",
+      id: "KI-2026-972",
+      title: "Logo Polibatam angkatan 25",
+      type: "Merek",
+      creator: "Ir. Jokowi",
       year: "2026",
-      status: "Terverifikasi",
+      status: "Terdaftar (Publik)",
     },
   ];
+
+  const handleOpenLicenceModal = (asset) => {
+    setSelectedAssetForLicence(asset);
+    setIsLicenceModalOpen(true);
+  };
 
   return (
     <div
@@ -92,7 +101,7 @@ export default function Hero({ isLightTheme }) {
       <section className="relative pt-10 pb-16 px-6 overflow-hidden">
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <span
-            className={`inline-block px-4 py-1.5 rounded-full text-xs font-semibold mb-6 border shadow-sm ${
+            className={`inline-block px-4 py-1.5 rounded-full text-xs font-semibold mb-6 border shadow-xs ${
               isLightTheme
                 ? "bg-blue-100 text-blue-700 border-blue-300"
                 : "bg-purple-950/80 border-purple-500/40 text-emerald-400"
@@ -147,7 +156,7 @@ export default function Hero({ isLightTheme }) {
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-6 text-left">
-                    <span className="bg-emerald-500/80 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded w-fit mb-1 backdrop-blur-sm">
+                    <span className="bg-emerald-500/80 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded w-fit mb-1 backdrop-blur-xs">
                       Informasi IP Assets
                     </span>
                     <h3 className="text-lg md:text-2xl font-bold text-white drop-shadow-md">
@@ -196,7 +205,7 @@ export default function Hero({ isLightTheme }) {
                   : "text-white placeholder-slate-400"
               }`}
             />
-            <button className="bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 px-6 py-3 rounded-xl font-medium text-sm text-white hover:opacity-90 transition shadow-md">
+            <button className="bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 px-6 py-3 rounded-xl font-medium text-sm text-white hover:opacity-90 transition shadow-md cursor-pointer">
               Cari Asset
             </button>
           </div>
@@ -235,12 +244,12 @@ export default function Hero({ isLightTheme }) {
           <div className="flex flex-wrap justify-center md:justify-start gap-2">
             <button
               onClick={() => setSelectedCategory("Semua")}
-              className={`px-4 py-2 rounded-xl text-xs font-medium transition ${
+              className={`px-4 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
                 selectedCategory === "Semua"
                   ? "bg-gradient-to-r from-blue-600 to-emerald-600 text-white shadow-md"
                   : isLightTheme
-                    ? "bg-white text-slate-600 border border-slate-200 hover:bg-slate-200"
-                    : "bg-[#1d1233] text-slate-300 hover:bg-[#281947] hover:text-white"
+                  ? "bg-white text-slate-600 border border-slate-200 hover:bg-slate-200"
+                  : "bg-[#1d1233] text-slate-300 hover:bg-[#281947] hover:text-white"
               }`}
             >
               Semua
@@ -249,12 +258,12 @@ export default function Hero({ isLightTheme }) {
               <button
                 key={idx}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-xl text-xs font-medium transition ${
+                className={`px-4 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
                   selectedCategory === cat
                     ? "bg-gradient-to-r from-blue-600 to-emerald-600 text-white shadow-md"
                     : isLightTheme
-                      ? "bg-white text-slate-600 border border-slate-200 hover:bg-slate-200"
-                      : "bg-[#1d1233] text-slate-300 hover:bg-[#281947] hover:text-white"
+                    ? "bg-white text-slate-600 border border-slate-200 hover:bg-slate-200"
+                    : "bg-[#1d1233] text-slate-300 hover:bg-[#281947] hover:text-white"
                 }`}
               >
                 {cat}
@@ -264,15 +273,17 @@ export default function Hero({ isLightTheme }) {
         </div>
       </section>
 
-      {/* Grid Katalog */}
+      {/* Grid Katalog Aset Publik */}
       <section className="py-16 px-6 max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-2xl font-bold">Katalog Aset Publik</h2>
+            <h2 className="text-2xl font-bold">Katalog Aset Publik Masyarakat</h2>
             <p
-              className={`text-sm ${isLightTheme ? "text-slate-500" : "text-purple-200/70"}`}
+              className={`text-sm ${
+                isLightTheme ? "text-slate-500" : "text-purple-200/70"
+              }`}
             >
-              Menampilkan KI terverifikasi yang siap diakses publik.
+              Menampilkan KI terverifikasi yang siap diakses publik dan dikomersialkan.
             </p>
           </div>
         </div>
@@ -289,7 +300,7 @@ export default function Hero({ isLightTheme }) {
             >
               <div>
                 <div className="flex justify-between items-center mb-3">
-                  <span className="text-xs px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-600 font-medium">
+                  <span className="text-xs px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-600 font-bold">
                     {asset.type}
                   </span>
                   <span className="text-xs text-slate-400">{asset.year}</span>
@@ -298,24 +309,41 @@ export default function Hero({ isLightTheme }) {
                   {asset.title}
                 </h3>
                 <p
-                  className={`mt-3 text-xs ${isLightTheme ? "text-slate-600" : "text-slate-300"}`}
+                  className={`mt-3 text-xs ${
+                    isLightTheme ? "text-slate-600" : "text-slate-300"
+                  }`}
                 >
-                  <strong>Pencipta:</strong> {asset.creator}
+                  <strong>Pencipta / Inventor:</strong> {asset.creator}
                 </p>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-200/40 flex items-center justify-between">
-                <span className="text-[11px] text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-300 font-medium">
-                  ✓ {asset.status}
-                </span>
-                <button className="text-xs text-blue-600 hover:text-emerald-600 transition font-medium">
-                  Detail & Dokumen →
+              {/* AREA TOMBOL AJUKAN MINAT LISENSI SINKRON UNTUK MASYARAKAT */}
+              <div className="mt-6 pt-4 border-t border-slate-200/40 flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300 font-bold">
+                    ✓ {asset.status}
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => handleOpenLicenceModal(asset)}
+                  className="w-full mt-2 py-2 bg-gradient-to-r from-blue-600 to-emerald-600 hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  ✉ Ajukan Minat Lisensi / Kerjasama
                 </button>
               </div>
             </div>
           ))}
         </div>
       </section>
+
+      {/* MODAL FORMULIR MINAT LISENSI */}
+      {isLicenceModalOpen && (
+        <ModalFormMinatLisensi
+          asset={selectedAssetForLicence}
+          onClose={() => setIsLicenceModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -126,7 +126,7 @@ export default function UserManagement() {
   useEffect(() => {
     localStorage.setItem(
       "ip_catalog_archived_users",
-      JSON.stringify(archivedUsers)
+      JSON.stringify(archivedUsers),
     );
   }, [archivedUsers]);
 
@@ -193,7 +193,9 @@ export default function UserManagement() {
       passwordAwal: "",
     });
     setShowAddModal(false);
-    alert("Dosen Inventor berhasil ditambahkan! Akun langsung siap digunakan untuk Login.");
+    alert(
+      "Dosen Inventor berhasil ditambahkan! Akun langsung siap digunakan untuk Login.",
+    );
   };
 
   // Buka Modal Edit
@@ -264,7 +266,7 @@ export default function UserManagement() {
   const handleDeleteUser = (userToDelete) => {
     if (
       window.confirm(
-        `Apakah Anda yakin ingin menghapus akun "${userToDelete.nama}"?\n\nAkun akan diblokir dari login, namun seluruh riwayat karya Kekayaan Intelektual (HKI) dosen ini tetap diarsipkan.`
+        `Apakah Anda yakin ingin menghapus akun "${userToDelete.nama}"?\n\nAkun akan diblokir dari login, namun seluruh riwayat karya Kekayaan Intelektual (HKI) dosen ini tetap diarsipkan.`,
       )
     ) {
       const archivedRecord = {
@@ -297,7 +299,8 @@ export default function UserManagement() {
         <div>
           <h1 className="text-xl font-bold text-slate-900">Kelola Pengguna</h1>
           <p className="text-xs text-slate-500">
-            Manajemen akun Dosen Inventor, monitoring kredensial/password, serta arsip aset Kekayaan Intelektual.
+            Manajemen akun Dosen Inventor, monitoring kredensial/password, serta
+            arsip aset Kekayaan Intelektual.
           </p>
         </div>
 
@@ -397,12 +400,18 @@ export default function UserManagement() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-100/70 text-slate-700 text-xs uppercase tracking-wider border-b border-slate-200">
-                    <th className="py-3.5 px-4 font-semibold">DOSEN INVENTOR</th>
+                    <th className="py-3.5 px-4 font-semibold">
+                      DOSEN INVENTOR
+                    </th>
                     <th className="py-3.5 px-4 font-semibold">ID</th>
                     <th className="py-3.5 px-4 font-semibold">JURUSAN</th>
                     <th className="py-3.5 px-4 font-semibold">STATUS AKUN</th>
-                    <th className="py-3.5 px-4 font-semibold">MONITORING PASSWORD</th>
-                    <th className="py-3.5 px-4 font-semibold text-center">AKSI</th>
+                    <th className="py-3.5 px-4 font-semibold">
+                      MONITORING PASSWORD
+                    </th>
+                    <th className="py-3.5 px-4 font-semibold text-center">
+                      AKSI
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 text-sm">
@@ -582,17 +591,24 @@ export default function UserManagement() {
         /* Tabel Arsip Dosen Dihapus & History Karya */
         <div className="bg-white rounded-xl shadow-xs border border-slate-200/80 overflow-hidden">
           <div className="p-4 bg-amber-50/60 border-b border-amber-200 text-xs text-amber-800">
-            <strong>Catatan Keamanan:</strong> Akun di bawah ini telah dihapus dan <strong>TIDAK BISA LOGIN</strong>, namun riwayat karya Kekayaan Intelektual (HKI) dosen ini tetap tersimpan permanen di arsip perguruan tinggi.
+            <strong>Catatan Keamanan:</strong> Akun di bawah ini telah dihapus
+            dan <strong>TIDAK BISA LOGIN</strong>, namun riwayat karya Kekayaan
+            Intelektual (HKI) dosen ini tetap tersimpan permanen di arsip
+            perguruan tinggi.
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-100/70 text-slate-700 text-xs uppercase tracking-wider border-b border-slate-200">
-                  <th className="py-3.5 px-4 font-semibold">DOSEN INVENTOR (DIHAPUS)</th>
+                  <th className="py-3.5 px-4 font-semibold">
+                    DOSEN INVENTOR (DIHAPUS)
+                  </th>
                   <th className="py-3.5 px-4 font-semibold">ID</th>
                   <th className="py-3.5 px-4 font-semibold">JURUSAN</th>
                   <th className="py-3.5 px-4 font-semibold">TGL DIHAPUS</th>
-                  <th className="py-3.5 px-4 font-semibold">HISTORY KARYA HKI TERDAFTAR</th>
+                  <th className="py-3.5 px-4 font-semibold">
+                    HISTORY KARYA HKI TERDAFTAR
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 text-sm">

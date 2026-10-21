@@ -90,52 +90,96 @@ export default function DashboardAdmin({ onLogout }) {
   const handleReadMessage = (messageId) => {
     setMessages((prev) =>
       prev.map((msg) =>
-        msg.id === messageId ? { ...msg, isRead: true } : msg
-      )
+        msg.id === messageId ? { ...msg, isRead: true } : msg,
+      ),
     );
   };
 
   // --------------------------------------------------------------------------
-  // SINKRONISASI DATA UTAMA DARI LOCALSTORAGE AGAR STATISTIK & GRAFIK SELALU SAMA
+  // SINKRONISASI DATA UTAMA DARI LOCALSTORAGE
   // --------------------------------------------------------------------------
   const [asetData, setAsetData] = useState(() => {
     const saved = localStorage.getItem("polibatam_kelola_aset_ki");
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
     }
     return [
-      { id: "KI-2026-001", title: "Sistem Presensi Deteksi Wajah Real-Time Berbasis AI", category: "Hak Cipta", subCategory: "Program Komputer", inventor: "Dr. Eng. Ahmad Yani, M.T.", jurusan: "Teknik Informatika", regNumber: "EC00202612345", regDate: "2026-01-15", status: "Terdaftar" },
-      { id: "KI-2026-002", title: "Alat Pengering Ikan Otomatis Berbasis IoT Energi Surya", category: "Paten", subCategory: "Paten Sederhana", inventor: "Rina Wijaya, S.T., M.Sc.", jurusan: "Teknik Elektro", regNumber: "S00202600891", regDate: "2026-02-10", status: "Terdaftar" },
-      { id: "KI-2026-003", title: "Desain Ergonomis Meja Kerja Laboratorium Industri", category: "Desain Industri", subCategory: "Mebel & Perabot", inventor: "Budi Santoso, S.ST., M.T.", jurusan: "Teknik Mesin", regNumber: "IDD000054321", regDate: "2026-03-01", status: "Dalam Proses" },
-      { id: "KI-2026-004", title: "Logo & Branding Sentra HKI Polibatam Digital Catalog", category: "Merek", subCategory: "Merek Jasa", inventor: "Tim Humas Polibatam", jurusan: "Manajemen Bisnis", regNumber: "DMB202609912", regDate: "2026-03-12", status: "Terdaftar" },
+      {
+        id: "KI-2026-001",
+        title: "Sistem Presensi Deteksi Wajah Real-Time Berbasis AI",
+        category: "Hak Cipta",
+        subCategory: "Program Komputer",
+        inventor: "Dr. Eng. Ahmad Yani, M.T.",
+        jurusan: "Teknik Informatika",
+        regNumber: "EC00202612345",
+        regDate: "2026-08-15",
+        status: "Terdaftar",
+      },
+      {
+        id: "KI-2026-002",
+        title: "Alat Pengering Ikan Otomatis Berbasis IoT Energi Surya",
+        category: "Paten",
+        subCategory: "Paten Sederhana",
+        inventor: "Rina Wijaya, S.T., M.Sc.",
+        jurusan: "Teknik Elektro",
+        regNumber: "S00202600891",
+        regDate: "2026-08-10",
+        status: "Terdaftar",
+      },
+      {
+        id: "KI-2026-003",
+        title: "Desain Ergonomis Meja Kerja Laboratorium Industri",
+        category: "Desain Industri",
+        subCategory: "Mebel & Perabot",
+        inventor: "Budi Santoso, S.ST., M.T.",
+        jurusan: "Teknik Mesin",
+        regNumber: "IDD000054321",
+        regDate: "2026-08-01",
+        status: "Dalam Proses",
+      },
+      {
+        id: "KI-2026-004",
+        title: "Logo & Branding Sentra HKI Polibatam Digital Catalog",
+        category: "Merek",
+        subCategory: "Merek Jasa",
+        inventor: "Tim Humas Polibatam",
+        jurusan: "Manajemen Bisnis",
+        regNumber: "DMB202609912",
+        regDate: "2026-08-12",
+        status: "Terdaftar",
+      },
     ];
   });
 
-  const [verifikasiData] = useState(() => {
-    const saved = localStorage.getItem("polibatam_pengajuan_ki_v2");
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
-    }
-    return [];
-  });
-
-  // MENGHITUNG STATISTIK UTAMA SECARA OTOMATIS BERDASARKAN DATA SEBENARNYA
+  // MENGHITUNG STATISTIK UTAMA SECARA OTOMATIS
   const stats = useMemo(() => {
     const totalAsetKI = asetData.length;
-    const totalHakCipta = asetData.filter((a) => a.category === "Hak Cipta").length;
-    const totalPaten = asetData.filter((a) => a.category === "Paten").length;
-    const totalMerekDesain = asetData.filter(
-      (a) => a.category === "Merek" || a.category === "Desain Industri" || a.category === "DTLST"
+    const totalHakCipta = asetData.filter(
+      (a) => a.category === "Hak Cipta",
     ).length;
+    const totalPaten = asetData.filter((a) => a.category === "Paten").length;
+    const totalMerek = asetData.filter((a) => a.category === "Merek").length;
+    const totalDesain = asetData.filter(
+      (a) => a.category === "Desain Industri",
+    ).length;
+    const totalDtlst = asetData.filter((a) => a.category === "DTLST").length;
 
-    // Menghitung statistik jurusan unik
-    const jurusanSet = new Set(asetData.map((a) => a.jurusan).filter(Boolean));
-    const totalJurusan = jurusanSet.size || 5;
-
-    return { totalAsetKI, totalHakCipta, totalPaten, totalMerekDesain, totalJurusan };
+    return {
+      totalAsetKI,
+      totalHakCipta,
+      totalPaten,
+      totalMerek,
+      totalDesain,
+      totalDtlst,
+      totalJurusan: 5, // Total Jurusan Resmi Polibatam
+    };
   }, [asetData]);
 
-  // MENGHITUNG STATUS PENGAJUAN PENUH
+  // MENGHITUNG STATUS PENGAJUAN PER KATEGORI KI (URUTAN: HAK CIPTA, MEREK, PATEN, DESAIN INDUSTRI, DTLST)
   const statusPengajuanPerKI = useMemo(() => {
     const calcStatus = (list) => {
       let menungguVerifikasi = 0;
@@ -146,7 +190,8 @@ export default function DashboardAdmin({ onLogout }) {
       list.forEach((item) => {
         const st = item.status || "";
         if (st === "Terdaftar" || st === "Disetujui") disetujui++;
-        else if (st === "Dalam Proses" || st === "Menunggu Verifikasi") menungguVerifikasi++;
+        else if (st === "Dalam Proses" || st === "Menunggu Verifikasi")
+          menungguVerifikasi++;
         else if (st === "Perlu Tindak Lanjut") tindakLanjut++;
         else if (st === "Ditolak") ditolak++;
         else disetujui++;
@@ -157,31 +202,64 @@ export default function DashboardAdmin({ onLogout }) {
 
     return {
       semua: calcStatus(asetData),
-      paten: calcStatus(asetData.filter((a) => a.category === "Paten")),
       hakCipta: calcStatus(asetData.filter((a) => a.category === "Hak Cipta")),
-      merekDesain: calcStatus(asetData.filter((a) => a.category === "Merek" || a.category === "Desain Industri")),
+      merek: calcStatus(asetData.filter((a) => a.category === "Merek")),
+      paten: calcStatus(asetData.filter((a) => a.category === "Paten")),
+      desainIndustri: calcStatus(
+        asetData.filter((a) => a.category === "Desain Industri"),
+      ),
+      dtlst: calcStatus(asetData.filter((a) => a.category === "DTLST")),
     };
   }, [asetData]);
 
-  // DATA GRAFIK PER JURUSAN REAL DARI ASSETS
+  // DATA GRAFIK PER JURUSAN LENGKAP 5 JURUSAN RESMI POLIBATAM
   const jurusanStats = useMemo(() => {
+    const daftarJurusanPolibatam = [
+      "Teknik Informatika",
+      "Teknik Elektro",
+      "Teknik Mesin",
+      "Manajemen Bisnis",
+      "Teknik Sipil",
+    ];
+
     const mapJurusan = {};
+    daftarJurusanPolibatam.forEach((jur) => {
+      mapJurusan[jur] = {
+        nama: jur,
+        HakCipta: 0,
+        Merek: 0,
+        Paten: 0,
+        DesainIndustri: 0,
+        DTLST: 0,
+        Total: 0,
+      };
+    });
+
     asetData.forEach((item) => {
-      const jur = item.jurusan || "Lainnya";
-      if (!mapJurusan[jur]) {
-        mapJurusan[jur] = { nama: jur, Paten: 0, HakCipta: 0, Total: 0 };
+      const jur = item.jurusan;
+      if (jur && mapJurusan[jur]) {
+        if (item.category === "Hak Cipta") mapJurusan[jur].HakCipta += 1;
+        else if (item.category === "Merek") mapJurusan[jur].Merek += 1;
+        else if (item.category === "Paten") mapJurusan[jur].Paten += 1;
+        else if (item.category === "Desain Industri")
+          mapJurusan[jur].DesainIndustri += 1;
+        else if (item.category === "DTLST") mapJurusan[jur].DTLST += 1;
+        mapJurusan[jur].Total += 1;
       }
-      if (item.category === "Paten") mapJurusan[jur].Paten += 1;
-      else if (item.category === "Hak Cipta") mapJurusan[jur].HakCipta += 1;
-      mapJurusan[jur].Total += 1;
     });
 
     return Object.values(mapJurusan);
   }, [asetData]);
 
-  // DATA GRAFIK PIE DISTRIBUSI KI DARI ASSETS
+  // DATA GRAFIK PIE DISTRIBUSI KI
   const jenisKiData = useMemo(() => {
-    const counts = { "Hak Cipta": 0, Paten: 0, Merek: 0, "Desain Industri": 0, DTLST: 0 };
+    const counts = {
+      "Hak Cipta": 0,
+      Merek: 0,
+      Paten: 0,
+      "Desain Industri": 0,
+      DTLST: 0,
+    };
     asetData.forEach((a) => {
       if (counts[a.category] !== undefined) {
         counts[a.category] += 1;
@@ -190,34 +268,80 @@ export default function DashboardAdmin({ onLogout }) {
 
     return [
       { name: "Hak Cipta", value: counts["Hak Cipta"], color: "#3B82F6" },
-      { name: "Paten", value: counts["Paten"], color: "#10B981" },
       { name: "Merek", value: counts["Merek"], color: "#F59E0B" },
-      { name: "Desain Industri", value: counts["Desain Industri"], color: "#8B5CF6" },
+      { name: "Paten", value: counts["Paten"], color: "#10B981" },
+      {
+        name: "Desain Industri",
+        value: counts["Desain Industri"],
+        color: "#8B5CF6",
+      },
       { name: "DTLST", value: counts["DTLST"], color: "#EC4899" },
     ];
   }, [asetData]);
 
-  // DATA GRAFIK TREN PERTAHUN
+  // DATA GRAFIK TREN PERTAHUN & BULAN (DINAMIS 2026 BULAN AGUSTUS)
   const trendPertahunData = [
-    { tahun: "2022", Paten: 2, HakCipta: 5, Total: 7 },
-    { tahun: "2023", Paten: 4, HakCipta: 8, Total: 12 },
-    { tahun: "2024", Paten: 6, HakCipta: 12, Total: 18 },
-    { tahun: "2025", Paten: 8, HakCipta: 15, Total: 23 },
-    { tahun: "2026", Paten: stats.totalPaten, HakCipta: stats.totalHakCipta, Total: stats.totalAsetKI },
+    {
+      tahun: "2022",
+      HakCipta: 4,
+      Merek: 2,
+      Paten: 1,
+      DesainIndustri: 1,
+      DTLST: 0,
+    },
+    {
+      tahun: "2023",
+      HakCipta: 7,
+      Merek: 3,
+      Paten: 3,
+      DesainIndustri: 2,
+      DTLST: 1,
+    },
+    {
+      tahun: "2024",
+      HakCipta: 10,
+      Merek: 5,
+      Paten: 4,
+      DesainIndustri: 3,
+      DTLST: 2,
+    },
+    {
+      tahun: "2025",
+      HakCipta: 14,
+      Merek: 6,
+      Paten: 6,
+      DesainIndustri: 4,
+      DTLST: 3,
+    },
+    {
+      tahun: "Agu 2026",
+      HakCipta: stats.totalHakCipta,
+      Merek: stats.totalMerek,
+      Paten: stats.totalPaten,
+      DesainIndustri: stats.totalDesain,
+      DTLST: stats.totalDtlst,
+    },
   ];
 
-  const kategoriBidangData = [
-    { bidang: "Software & AI", jumlah: stats.totalHakCipta },
-    { bidang: "IoT & Robotika", jumlah: stats.totalPaten },
-    { bidang: "Manufaktur & Energi", jumlah: stats.totalMerekDesain },
-  ];
-
-  const currentStatusStats = statusPengajuanPerKI[selectedKiFilter] || statusPengajuanPerKI.semua;
+  const currentStatusStats =
+    statusPengajuanPerKI[selectedKiFilter] || statusPengajuanPerKI.semua;
 
   const chartStatusData = [
-    { status: "Menunggu Verifikasi", Jumlah: currentStatusStats.menungguVerifikasi, color: "#F59E0B" },
-    { status: "Perlu Tindak Lanjut", Jumlah: currentStatusStats.tindakLanjut, color: "#F97316" },
-    { status: "Disetujui / Terdaftar", Jumlah: currentStatusStats.disetujui, color: "#10B981" },
+    {
+      status: "Menunggu Verifikasi",
+      Jumlah: currentStatusStats.menungguVerifikasi,
+      color: "#F59E0B",
+    },
+    {
+      status: "Perlu Tindak Lanjut",
+      Jumlah: currentStatusStats.tindakLanjut,
+      color: "#F97316",
+    },
+    {
+      status: "Disetujui / Terdaftar",
+      Jumlah: currentStatusStats.disetujui,
+      color: "#10B981",
+    },
     { status: "Ditolak", Jumlah: currentStatusStats.ditolak, color: "#F43F5E" },
   ];
 
@@ -256,73 +380,97 @@ export default function DashboardAdmin({ onLogout }) {
                         Panel Kelola Admin Sentra KI Polibatam
                       </h1>
                       <p className="text-xs text-slate-500 mt-1">
-                        Sistem Informasi Pengelolaan & Katalog Aset Kekayaan Intelektual
+                        Sistem Informasi Pengelolaan & Katalog Aset Kekayaan
+                        Intelektual
                       </p>
                     </div>
                     <div className="hidden sm:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600">
                       <TrendingUp className="w-4 h-4 text-emerald-500" />
-                      Update 2026
+                      Periode: Agustus 2026
                     </div>
                   </div>
 
-                  {/* BARIS 1: KARTU STATISTIK UTAMA (DIHITUNG DINAMIS SINKRON) */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs font-medium text-slate-500">Total Aset KI</p>
-                        <Award className="w-5 h-5 text-indigo-500" />
-                      </div>
-                      <p className="text-2xl font-bold text-slate-800 mt-2">{stats.totalAsetKI}</p>
-                      <span className="text-[10px] text-emerald-600 font-medium">Terverifikasi & Aktif</span>
+                  {/* KARTU STATISTIK UTAMA */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+                      <p className="text-xs font-medium text-slate-500">
+                        Total Aset KI
+                      </p>
+                      <p className="text-2xl font-bold text-slate-800 mt-1">
+                        {stats.totalAsetKI}
+                      </p>
+                      <span className="text-[10px] text-emerald-600 font-medium">
+                        Aktif
+                      </span>
                     </div>
-
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs font-medium text-slate-500">Total Hak Cipta</p>
-                        <FileCheck className="w-5 h-5 text-blue-500" />
-                      </div>
-                      <p className="text-2xl font-bold text-blue-600 mt-2">{stats.totalHakCipta}</p>
-                      <span className="text-[10px] text-slate-400">Paling Dominan</span>
+                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+                      <p className="text-xs font-medium text-slate-500">
+                        Hak Cipta
+                      </p>
+                      <p className="text-2xl font-bold text-blue-600 mt-1">
+                        {stats.totalHakCipta}
+                      </p>
+                      <span className="text-[10px] text-slate-400">
+                        Kategori 1
+                      </span>
                     </div>
-
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs font-medium text-slate-500">Total Paten</p>
-                        <Layers className="w-5 h-5 text-emerald-500" />
-                      </div>
-                      <p className="text-2xl font-bold text-emerald-600 mt-2">{stats.totalPaten}</p>
-                      <span className="text-[10px] text-slate-400">Paten Biasa & Sederhana</span>
+                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+                      <p className="text-xs font-medium text-slate-500">
+                        Merek
+                      </p>
+                      <p className="text-2xl font-bold text-amber-600 mt-1">
+                        {stats.totalMerek}
+                      </p>
+                      <span className="text-[10px] text-slate-400">
+                        Kategori 2
+                      </span>
                     </div>
-
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs font-medium text-slate-500">Total Jurusan</p>
-                        <Building2 className="w-5 h-5 text-purple-500" />
-                      </div>
-                      <p className="text-2xl font-bold text-purple-600 mt-2">{stats.totalJurusan}</p>
-                      <span className="text-[10px] text-slate-400">Unit Pengusul</span>
+                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+                      <p className="text-xs font-medium text-slate-500">
+                        Paten
+                      </p>
+                      <p className="text-2xl font-bold text-emerald-600 mt-1">
+                        {stats.totalPaten}
+                      </p>
+                      <span className="text-[10px] text-slate-400">
+                        Kategori 3
+                      </span>
                     </div>
-
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs font-medium text-slate-500">Merek & Desain</p>
-                        <Award className="w-5 h-5 text-amber-500" />
-                      </div>
-                      <p className="text-2xl font-bold text-amber-600 mt-2">{stats.totalMerekDesain}</p>
-                      <span className="text-[10px] text-slate-400">Aset Industri</span>
+                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+                      <p className="text-xs font-medium text-slate-500">
+                        Desain Industri
+                      </p>
+                      <p className="text-2xl font-bold text-purple-600 mt-1">
+                        {stats.totalDesain}
+                      </p>
+                      <span className="text-[10px] text-slate-400">
+                        Kategori 4
+                      </span>
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+                      <p className="text-xs font-medium text-slate-500">
+                        DTLST
+                      </p>
+                      <p className="text-2xl font-bold text-pink-600 mt-1">
+                        {stats.totalDtlst}
+                      </p>
+                      <span className="text-[10px] text-slate-400">
+                        Kategori 5
+                      </span>
                     </div>
                   </div>
 
-                  {/* BARIS 2: STATISTIK STATUS PENGAJUAN & GRAFIK VISUAL HARMONIS */}
+                  {/* STATISTIK STATUS PENGAJUAN KI (URUTAN SESUAI PERMINTAAN) */}
                   <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-4">
                       <div>
                         <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
                           <BarChart2 className="w-5 h-5 text-indigo-600" />
-                          Statistik Status Pengajuan KI Berdasarkan Jenis
+                          Statistik Status Pengajuan KI
                         </h3>
                         <p className="text-xs text-slate-500 mt-0.5">
-                          Pemantauan tahapan verifikasi & tindak lanjut untuk pengajuan Paten, Hak Cipta, dan Jenis KI lainnya.
+                          Pemantauan tahapan verifikasi berdasarkan kategori
+                          Kekayaan Intelektual.
                         </p>
                       </div>
 
@@ -333,10 +481,14 @@ export default function DashboardAdmin({ onLogout }) {
                           onChange={(e) => setSelectedKiFilter(e.target.value)}
                           className="bg-transparent text-xs font-semibold text-slate-700 focus:outline-none cursor-pointer pr-2"
                         >
-                          <option value="semua">Semua Jenis KI</option>
-                          <option value="paten">Khusus Paten</option>
-                          <option value="hakCipta">Khusus Hak Cipta</option>
-                          <option value="merekDesain">Merek & Desain Industri</option>
+                          <option value="semua">Semua Kategori KI</option>
+                          <option value="hakCipta">1. Hak Cipta</option>
+                          <option value="merek">2. Merek</option>
+                          <option value="paten">3. Paten</option>
+                          <option value="desainIndustri">
+                            4. Desain Industri
+                          </option>
+                          <option value="dtlst">5. DTLST</option>
                         </select>
                       </div>
                     </div>
@@ -347,8 +499,12 @@ export default function DashboardAdmin({ onLogout }) {
                           <Clock className="w-6 h-6 text-amber-600" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs text-amber-800 font-semibold truncate">Menunggu Verifikasi</p>
-                          <p className="text-2xl font-bold text-amber-900 mt-0.5">{currentStatusStats.menungguVerifikasi}</p>
+                          <p className="text-xs text-amber-800 font-semibold truncate">
+                            Menunggu Verifikasi
+                          </p>
+                          <p className="text-2xl font-bold text-amber-900 mt-0.5">
+                            {currentStatusStats.menungguVerifikasi}
+                          </p>
                           <span className="text-[10px] text-amber-700 font-medium flex items-center gap-1 mt-0.5">
                             <ArrowRight className="w-3 h-3" /> Perlu diperiksa
                           </span>
@@ -360,8 +516,12 @@ export default function DashboardAdmin({ onLogout }) {
                           <AlertTriangle className="w-6 h-6 text-orange-600" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs text-orange-800 font-semibold truncate">Perlu Tindak Lanjut</p>
-                          <p className="text-2xl font-bold text-orange-900 mt-0.5">{currentStatusStats.tindakLanjut}</p>
+                          <p className="text-xs text-orange-800 font-semibold truncate">
+                            Perlu Tindak Lanjut
+                          </p>
+                          <p className="text-2xl font-bold text-orange-900 mt-0.5">
+                            {currentStatusStats.tindakLanjut}
+                          </p>
                           <span className="text-[10px] text-orange-700 font-medium flex items-center gap-1 mt-0.5">
                             <ArrowRight className="w-3 h-3" /> Revisi / Catatan
                           </span>
@@ -373,10 +533,15 @@ export default function DashboardAdmin({ onLogout }) {
                           <CheckCircle2 className="w-6 h-6 text-emerald-600" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs text-emerald-800 font-semibold truncate">Disetujui / Terdaftar</p>
-                          <p className="text-2xl font-bold text-emerald-900 mt-0.5">{currentStatusStats.disetujui}</p>
+                          <p className="text-xs text-emerald-800 font-semibold truncate">
+                            Disetujui / Terdaftar
+                          </p>
+                          <p className="text-2xl font-bold text-emerald-900 mt-0.5">
+                            {currentStatusStats.disetujui}
+                          </p>
                           <span className="text-[10px] text-emerald-700 font-medium flex items-center gap-1 mt-0.5">
-                            <ArrowRight className="w-3 h-3" /> Siap Terbit / Sertifikat
+                            <ArrowRight className="w-3 h-3" /> Siap Terbit /
+                            Sertifikat
                           </span>
                         </div>
                       </div>
@@ -386,10 +551,15 @@ export default function DashboardAdmin({ onLogout }) {
                           <XCircle className="w-6 h-6 text-rose-600" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs text-rose-800 font-semibold truncate">Ditolak</p>
-                          <p className="text-2xl font-bold text-rose-900 mt-0.5">{currentStatusStats.ditolak}</p>
+                          <p className="text-xs text-rose-800 font-semibold truncate">
+                            Ditolak
+                          </p>
+                          <p className="text-2xl font-bold text-rose-900 mt-0.5">
+                            {currentStatusStats.ditolak}
+                          </p>
                           <span className="text-[10px] text-rose-700 font-medium flex items-center gap-1 mt-0.5">
-                            <ArrowRight className="w-3 h-3" /> Berkas Tidak Sesuai
+                            <ArrowRight className="w-3 h-3" /> Berkas Tidak
+                            Sesuai
                           </span>
                         </div>
                       </div>
@@ -398,30 +568,52 @@ export default function DashboardAdmin({ onLogout }) {
                     <div className="p-4 bg-slate-50/80 rounded-xl border border-slate-100">
                       <div className="flex justify-between items-center mb-3">
                         <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                          Grafik Visual Perbandingan Status (
-                          {selectedKiFilter === "semua"
-                            ? "Semua KI"
-                            : selectedKiFilter === "paten"
-                            ? "Paten"
-                            : selectedKiFilter === "hakCipta"
-                            ? "Hak Cipta"
-                            : "Merek & Desain"}
-                          )
+                          Grafik Visual Perbandingan Status (Filter:{" "}
+                          {selectedKiFilter})
                         </h4>
                         <span className="text-[11px] text-slate-500">
-                          Total: <b>{currentStatusStats.menungguVerifikasi + currentStatusStats.tindakLanjut + currentStatusStats.disetujui + currentStatusStats.ditolak}</b> Pengajuan
+                          Total:{" "}
+                          <b>
+                            {currentStatusStats.menungguVerifikasi +
+                              currentStatusStats.tindakLanjut +
+                              currentStatusStats.disetujui +
+                              currentStatusStats.ditolak}
+                          </b>{" "}
+                          Pengajuan
                         </span>
                       </div>
                       <div className="h-52 w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={chartStatusData} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                            <XAxis dataKey="status" tick={{ fontSize: 11, fill: "#475569" }} />
+                          <BarChart
+                            data={chartStatusData}
+                            margin={{
+                              top: 10,
+                              right: 20,
+                              left: -10,
+                              bottom: 0,
+                            }}
+                          >
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              vertical={false}
+                              stroke="#E2E8F0"
+                            />
+                            <XAxis
+                              dataKey="status"
+                              tick={{ fontSize: 11, fill: "#475569" }}
+                            />
                             <YAxis tick={{ fontSize: 11, fill: "#475569" }} />
                             <Tooltip />
-                            <Bar dataKey="Jumlah" radius={[6, 6, 0, 0]} barSize={40}>
+                            <Bar
+                              dataKey="Jumlah"
+                              radius={[6, 6, 0, 0]}
+                              barSize={40}
+                            >
                               {chartStatusData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                <Cell
+                                  key={`cell-${index}`}
+                                  fill={entry.color}
+                                />
                               ))}
                             </Bar>
                           </BarChart>
@@ -430,23 +622,64 @@ export default function DashboardAdmin({ onLogout }) {
                     </div>
                   </div>
 
-                  {/* BARIS 3: GRAFIK TREN & DISTRIBUSI KI */}
+                  {/* GRAFIK TREN PERTAHUN DENGAN WARNA BERBEDA PER KATEGORI KI */}
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
                       <div className="mb-4">
-                        <h3 className="text-base font-bold text-slate-800">Grafik Pertumbuhan KI Pertahun</h3>
-                        <p className="text-xs text-slate-500">Perkembangan jumlah Paten & Hak Cipta terdaftar (2022 - 2026)</p>
+                        <h3 className="text-base font-bold text-slate-800">
+                          Grafik Pertumbuhan KI Pertahun & Per Bulan
+                        </h3>
+                        <p className="text-xs text-slate-500">
+                          Data otomatis diperbarui hingga periode Agustus 2026
+                          dengan warna garis kategori berbeda.
+                        </p>
                       </div>
                       <div className="h-64 w-full">
                         <ResponsiveContainer width="100%" height="100%">
                           <LineChart data={trendPertahunData}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              vertical={false}
+                            />
                             <XAxis dataKey="tahun" tick={{ fontSize: 12 }} />
                             <YAxis tick={{ fontSize: 12 }} />
                             <Tooltip />
-                            <Legend />
-                            <Line type="monotone" dataKey="HakCipta" name="Hak Cipta" stroke="#3B82F6" strokeWidth={2} activeDot={{ r: 6 }} />
-                            <Line type="monotone" dataKey="Paten" name="Paten" stroke="#10B981" strokeWidth={2} />
+                            <Legend wrapperStyle={{ fontSize: "11px" }} />
+                            <Line
+                              type="monotone"
+                              dataKey="HakCipta"
+                              name="Hak Cipta"
+                              stroke="#3B82F6"
+                              strokeWidth={2}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="Merek"
+                              name="Merek"
+                              stroke="#F59E0B"
+                              strokeWidth={2}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="Paten"
+                              name="Paten"
+                              stroke="#10B981"
+                              strokeWidth={2}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="DesainIndustri"
+                              name="Desain Industri"
+                              stroke="#8B5CF6"
+                              strokeWidth={2}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="DTLST"
+                              name="DTLST"
+                              stroke="#EC4899"
+                              strokeWidth={2}
+                            />
                           </LineChart>
                         </ResponsiveContainer>
                       </div>
@@ -454,15 +687,30 @@ export default function DashboardAdmin({ onLogout }) {
 
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
                       <div>
-                        <h3 className="text-base font-bold text-slate-800">Distribusi Jenis KI</h3>
-                        <p className="text-xs text-slate-500">Persentase pembagian jenis Kekayaan Intelektual</p>
+                        <h3 className="text-base font-bold text-slate-800">
+                          Distribusi Jenis KI
+                        </h3>
+                        <p className="text-xs text-slate-500">
+                          Persentase pembagian 5 jenis Kekayaan Intelektual
+                        </p>
                       </div>
                       <div className="h-48 w-full my-2">
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart>
-                            <Pie data={jenisKiData} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={3} dataKey="value">
+                            <Pie
+                              data={jenisKiData}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={50}
+                              outerRadius={75}
+                              paddingAngle={3}
+                              dataKey="value"
+                            >
                               {jenisKiData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                <Cell
+                                  key={`cell-${index}`}
+                                  fill={entry.color}
+                                />
                               ))}
                             </Pie>
                             <Tooltip />
@@ -471,8 +719,14 @@ export default function DashboardAdmin({ onLogout }) {
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         {jenisKiData.map((item) => (
-                          <div key={item.name} className="flex items-center space-x-2">
-                            <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: item.color }}></span>
+                          <div
+                            key={item.name}
+                            className="flex items-center space-x-2"
+                          >
+                            <span
+                              className="w-3 h-3 rounded-full shrink-0"
+                              style={{ backgroundColor: item.color }}
+                            ></span>
                             <span className="text-slate-600 font-medium truncate">
                               {item.name}: <b>{item.value}</b>
                             </span>
@@ -482,59 +736,91 @@ export default function DashboardAdmin({ onLogout }) {
                     </div>
                   </div>
 
-                  {/* BARIS 4: GRAFIK STATISTIK PER JURUSAN */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-                      <div className="mb-4">
-                        <h3 className="text-base font-bold text-slate-800">Jumlah Berdasarkan Kategori Bidang</h3>
-                        <p className="text-xs text-slate-500">Klasifikasi aset KI dalam bidang teknologi & sains</p>
-                      </div>
-                      <div className="h-60 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={kategoriBidangData} layout="vertical">
-                            <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                            <XAxis type="number" tick={{ fontSize: 12 }} />
-                            <YAxis dataKey="bidang" type="category" width={130} tick={{ fontSize: 10 }} />
-                            <Tooltip />
-                            <Bar dataKey="jumlah" fill="#6366F1" radius={[0, 6, 6, 0]} name="Jumlah KI" />
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
+                  {/* GRAFIK PEROLEHAN KI PER JURUSAN (LENGKAP 5 JURUSAN POLIBATAM) */}
+                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                    <div className="mb-4">
+                      <h3 className="text-base font-bold text-slate-800">
+                        Grafik Perolehan KI per Jurusan (Politeknik Negeri
+                        Batam)
+                      </h3>
+                      <p className="text-xs text-slate-500">
+                        Distribusi lengkap seluruh 5 jurusan pengusul aset KI di
+                        Polibatam.
+                      </p>
                     </div>
 
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
-                      <div>
-                        <h3 className="text-base font-bold text-slate-800 mb-1">Grafik Perolehan KI per Jurusan</h3>
-                        <p className="text-xs text-slate-500 mb-4">Perbandingan jumlah Paten & Hak Cipta yang dihasilkan per Jurusan</p>
-                      </div>
-
-                      <div className="h-60 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={jurusanStats} margin={{ top: 10, right: 10, left: -20, bottom: 25 }}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                            <XAxis dataKey="nama" tick={{ fontSize: 9, fill: "#475569" }} interval={0} angle={-15} textAnchor="end" />
-                            <YAxis tick={{ fontSize: 11, fill: "#475569" }} />
-                            <Tooltip />
-                            <Legend wrapperStyle={{ fontSize: "11px", paddingTop: "8px" }} />
-                            <Bar dataKey="Paten" fill="#10B981" stackId="a" />
-                            <Bar dataKey="HakCipta" fill="#3B82F6" stackId="a" radius={[4, 4, 0, 0]} />
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
+                    <div className="h-72 w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart
+                          data={jurusanStats}
+                          margin={{ top: 10, right: 10, left: -10, bottom: 25 }}
+                        >
+                          <CartesianGrid
+                            strokeDasharray="3 3"
+                            vertical={false}
+                          />
+                          <XAxis
+                            dataKey="nama"
+                            tick={{ fontSize: 10, fill: "#475569" }}
+                            interval={0}
+                          />
+                          <YAxis tick={{ fontSize: 11, fill: "#475569" }} />
+                          <Tooltip />
+                          <Legend
+                            wrapperStyle={{
+                              fontSize: "11px",
+                              paddingTop: "8px",
+                            }}
+                          />
+                          <Bar
+                            dataKey="HakCipta"
+                            fill="#3B82F6"
+                            stackId="a"
+                            name="Hak Cipta"
+                          />
+                          <Bar
+                            dataKey="Merek"
+                            fill="#F59E0B"
+                            stackId="a"
+                            name="Merek"
+                          />
+                          <Bar
+                            dataKey="Paten"
+                            fill="#10B981"
+                            stackId="a"
+                            name="Paten"
+                          />
+                          <Bar
+                            dataKey="DesainIndustri"
+                            fill="#8B5CF6"
+                            stackId="a"
+                            name="Desain Industri"
+                          />
+                          <Bar
+                            dataKey="DTLST"
+                            fill="#EC4899"
+                            stackId="a"
+                            name="DTLST"
+                            radius={[4, 4, 0, 0]}
+                          />
+                        </BarChart>
+                      </ResponsiveContainer>
                     </div>
                   </div>
 
-                  {/* BARIS 5: TABEL PENGAJUAN TERBARU */}
+                  {/* TABEL PENGAJUAN TERBARU */}
                   <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-                    <h3 className="text-base font-bold text-slate-800 mb-3">Pengajuan Usulan KI Terbaru</h3>
+                    <h3 className="text-base font-bold text-slate-800 mb-3">
+                      Pengajuan Usulan KI Terbaru
+                    </h3>
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs">
                         <thead className="bg-slate-50 text-slate-600 uppercase">
                           <tr>
                             <th className="p-3">ID Usulan</th>
                             <th className="p-3">Judul KI</th>
-                            <th className="p-3">Pengusul</th>
-                            <th className="p-3">Jenis/Kategori</th>
+                            <th className="p-3">Pengusul & Jurusan</th>
+                            <th className="p-3">Jenis Kategori</th>
                             <th className="p-3">Tanggal</th>
                             <th className="p-3">Status</th>
                           </tr>
@@ -542,20 +828,27 @@ export default function DashboardAdmin({ onLogout }) {
                         <tbody className="divide-y divide-slate-100">
                           {asetData.slice(0, 5).map((sub) => (
                             <tr key={sub.id} className="hover:bg-slate-50">
-                              <td className="p-3 font-semibold text-slate-700">{sub.id}</td>
-                              <td className="p-3 font-medium text-slate-800">{sub.title}</td>
-                              <td className="p-3 text-slate-600">{sub.inventor}</td>
-                              <td className="p-3 text-slate-600">{sub.category}</td>
-                              <td className="p-3 text-slate-500">{sub.regDate}</td>
+                              <td className="p-3 font-semibold text-slate-700">
+                                {sub.id}
+                              </td>
+                              <td className="p-3 font-medium text-slate-800">
+                                {sub.title}
+                              </td>
+                              <td className="p-3 text-slate-600">
+                                {sub.inventor}{" "}
+                                <span className="block text-[10px] text-slate-400">
+                                  {sub.jurusan}
+                                </span>
+                              </td>
+                              <td className="p-3 text-slate-600">
+                                {sub.category}
+                              </td>
+                              <td className="p-3 text-slate-500">
+                                {sub.regDate}
+                              </td>
                               <td className="p-3">
                                 <span
-                                  className={`px-2.5 py-1 rounded-full text-[10px] font-semibold ${
-                                    sub.status === "Terdaftar"
-                                      ? "bg-emerald-100 text-emerald-700"
-                                      : sub.status === "Dalam Proses"
-                                      ? "bg-amber-100 text-amber-700"
-                                      : "bg-rose-100 text-rose-700"
-                                  }`}
+                                  className={`px-2.5 py-1 rounded-full text-[10px] font-semibold ${sub.status === "Terdaftar" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}
                                 >
                                   {sub.status}
                                 </span>
@@ -570,7 +863,7 @@ export default function DashboardAdmin({ onLogout }) {
               }
             />
 
-            {/* ROUTING DENGAN FILE UTAMA SINKRON */}
+            {/* ROUTING LAINNYA */}
             <Route path="/users" element={<KelolaPengguna />} />
             <Route path="/aset" element={<KelolaAsetKI />} />
             <Route path="/verifikasi" element={<VerifikasiPengajuan />} />

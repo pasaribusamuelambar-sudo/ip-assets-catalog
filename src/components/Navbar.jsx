@@ -42,7 +42,7 @@ export default function Navbar({
               isLightTheme ? "text-emerald-600" : "text-emerald-400"
             }`}
           >
-            SENTRA HKI POLIBATAM
+            SENTRA KI POLIBATAM
           </span>
         </div>
       </Link>

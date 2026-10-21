@@ -29,31 +29,24 @@ const DRAWER_WIDTH = 260;
 export default function SidebarDosen({ onLogout }) {
   const navigate = useNavigate();
 
-  // State Pop-up Menu Profil Bawah
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
 
-  const handleOpenMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
+  const handleOpenMenu = (event) => setAnchorEl(event.currentTarget);
+  const handleCloseMenu = () => setAnchorEl(null);
 
   const handleLogoutAction = () => {
     handleCloseMenu();
     if (onLogout) onLogout();
   };
 
-  // Ambil Data Dosen Aktif dari LocalStorage
   const currentUser = JSON.parse(localStorage.getItem("currentUser")) || {
     name: "Samuel Ambar Pasaribu, M.Kom.",
     email: "pasaribusamuelambar@gmail.com",
     id: "3312511048",
   };
 
-  // Navigasi Menu Dosen (Sesuai File Komponen Proyek)
+  // Navigasi Menu Dosen dengan nama menu "Asset" dan "Profil"
   const dosenNavItems = [
     {
       text: "Dashboard & Ringkasan",
@@ -66,12 +59,12 @@ export default function SidebarDosen({ onLogout }) {
       icon: <PostAddIcon />,
     },
     {
-      text: "Aset & Hak Cipta Saya",
+      text: "Asset", // Diubah menjadi "Asset" sesuai instruksi
       path: "/dosen/katalog-saya",
       icon: <FolderSpecialIcon />,
     },
     {
-      text: "Profil & Portofolio BKD",
+      text: "Profil", // Diubah menjadi "Profil" sesuai instruksi
       path: "/dosen/profil",
       icon: <AccountCircleIcon />,
     },
@@ -97,9 +90,7 @@ export default function SidebarDosen({ onLogout }) {
           },
         }}
       >
-        {/* HEADER BRAND & NAVIGASI FITUR DOSEN */}
         <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
-          {/* LOGO BRAND SENTRA HKI */}
           <Box
             sx={{
               display: "flex",
@@ -145,7 +136,6 @@ export default function SidebarDosen({ onLogout }) {
                   color: "#38bdf8",
                   fontSize: "10px",
                   fontWeight: 600,
-                  tracking: 1,
                 }}
               >
                 POLITEKNIK NEGERI BATAM
@@ -169,7 +159,6 @@ export default function SidebarDosen({ onLogout }) {
             Menu Utama Dosen
           </Typography>
 
-          {/* LIST MENU DOSEN */}
           <List
             disablePadding
             sx={{ gap: 0.5, display: "flex", flexDirection: "column" }}
@@ -217,7 +206,6 @@ export default function SidebarDosen({ onLogout }) {
           </List>
         </Box>
 
-        {/* PROFILE CARD & POP-UP MENU (BAGIAN BAWAH) */}
         <Box
           sx={{
             pt: 2,
@@ -279,19 +267,12 @@ export default function SidebarDosen({ onLogout }) {
             <MoreVertIcon fontSize="small" />
           </IconButton>
 
-          {/* POP-UP MENU MATERIAL UI */}
           <Menu
             anchorEl={anchorEl}
             open={openMenu}
             onClose={handleCloseMenu}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            transformOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+            transformOrigin={{ vertical: "bottom", horizontal: "left" }}
             PaperProps={{
               elevation: 4,
               sx: {
@@ -307,9 +288,7 @@ export default function SidebarDosen({ onLogout }) {
                   fontWeight: 500,
                   py: 1,
                   px: 2,
-                  "&:hover": {
-                    backgroundColor: "#161b22",
-                  },
+                  "&:hover": { backgroundColor: "#161b22" },
                 },
               },
             }}
@@ -320,7 +299,7 @@ export default function SidebarDosen({ onLogout }) {
                 navigate("/dosen/profil");
               }}
             >
-              Profil BKD Saya
+              Profil Saya
             </MenuItem>
             <MenuItem
               onClick={() => {
@@ -328,7 +307,7 @@ export default function SidebarDosen({ onLogout }) {
                 navigate("/dosen/katalog-saya");
               }}
             >
-              Katalog Aset Saya
+              Asset Saya
             </MenuItem>
             <Divider sx={{ borderColor: "#21262d", my: 0.5 }} />
             <MenuItem
