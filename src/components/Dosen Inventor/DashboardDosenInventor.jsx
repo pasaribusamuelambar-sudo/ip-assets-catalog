@@ -20,7 +20,7 @@ import {
   Layers,
   Sparkles,
   ArrowRight,
-  FileCheck2,
+  ExternalLink,
 } from "lucide-react";
 
 export default function DashboardDosenInventor({ user, onLogout }) {
@@ -97,7 +97,11 @@ export default function DashboardDosenInventor({ user, onLogout }) {
     };
   }, [user]);
 
-  // DATA 5 PANDUAN KATEGORI KI LENGKAP
+  // URL LINK PANDUAN UTAMA & PER KATEGORI SHAREPOINT SENTRA HKI POLIBATAM
+  const sharepointPanduanUtamaUrl =
+    "https://polbat-my.sharepoint.com/personal/sentrahki_polibatam_ac_id/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fsentrahki%5Fpolibatam%5Fac%5Fid%2FDocuments%2F00%20DOKUMEN%20SentralAkses%5FPUBLIC%20SHARE%2F02%20PANDUAN%20TEKNIS%20PENDAFTARAN%20KI%20INTERNAL%20SIMP3M&ga=1";
+
+  // DATA 5 PANDUAN KATEGORI KI LENGKAP DENGAN LINK MASING-MASING
   const panduanKiList = [
     {
       id: "hak-cipta",
@@ -105,13 +109,7 @@ export default function DashboardDosenInventor({ user, onLogout }) {
       subJudul: "Program Komputer, Karya Tulis, Modul & Sinematografi",
       icon: FileText,
       color: "bg-blue-50 text-blue-600 border-blue-200",
-      badgeColor: "bg-blue-100 text-blue-700",
-      syarat: [
-        "Surat Pernyataan Hak Cipta (Tanda Tangan di atas Materai 10.000)",
-        "Surat Pengalihan Hak Cipta (Jika pengusul atas nama institusi)",
-        "Manual Book / Modul / Source Code Program Komputer lengkap",
-        "KTP Seluruh Pencipta & Draf Ringkasan Karya",
-      ],
+      link: "https://polbat-my.sharepoint.com/personal/sentrahki_polibatam_ac_id/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fsentrahki%5Fpolibatam%5Fac%5Fid%2FDocuments%2F00%20DOKUMEN%20SentralAkses%5FPUBLIC%20SHARE%2F02%20PANDUAN%20TEKNIS%20PENDAFTARAN%20KI%20INTERNAL%20SIMP3M%2F01%20HAK%20CIPTA&viewid=6b665f33%2Dc0b1%2D41cb%2Db12c%2D521c07e17b90&ga=1",
     },
     {
       id: "paten",
@@ -119,13 +117,7 @@ export default function DashboardDosenInventor({ user, onLogout }) {
       subJudul: "Invensi Teknologi, Alat Mekanis, Proses & Formula",
       icon: Cpu,
       color: "bg-emerald-50 text-emerald-600 border-emerald-200",
-      badgeColor: "bg-emerald-100 text-emerald-700",
-      syarat: [
-        "Dokumen Deskripsi Paten (Judul, Latar Belakang, Abstrak, Klaim)",
-        "Gambar Teknik / Diagram Alur Invensi (PDF Jelas)",
-        "Surat Pernyataan Kepemilikan Invensi oleh Inventor",
-        "Surat Pengalihan Hak atas Invensi ke Polibatam",
-      ],
+      link: "https://polbat-my.sharepoint.com/personal/sentrahki_polibatam_ac_id/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fsentrahki%5Fpolibatam%5Fac%5Fid%2FDocuments%2F00%20DOKUMEN%20SentralAkses%5FPUBLIC%20SHARE%2F02%20PANDUAN%20TEKNIS%20PENDAFTARAN%20KI%20INTERNAL%20SIMP3M%2F02%20PATEN%20%26%20PATEN%20SEDERHANA&viewid=6b665f33%2Dc0b1%2D41cb%2Db12c%2D521c07e17b90&ga=1",
     },
     {
       id: "merek",
@@ -133,13 +125,7 @@ export default function DashboardDosenInventor({ user, onLogout }) {
       subJudul: "Logo Produk, Nama Dagang Jasa & Branding Industri",
       icon: Bookmark,
       color: "bg-amber-50 text-amber-600 border-amber-200",
-      badgeColor: "bg-amber-100 text-amber-700",
-      syarat: [
-        "Etiket / Logo Merek High Resolution (Format PNG/JPEG)",
-        "Daftar Kelas Barang / Jasa yang diajukan (Kelas 1 - 45)",
-        "Surat Pernyataan Merek milik Sendiri / Lembaga",
-        "Tanda Tangan Pemohon / Pimpinan Lembaga Pengusul",
-      ],
+      link: "https://polbat-my.sharepoint.com/personal/sentrahki_polibatam_ac_id/_layouts/15/Doc.aspx?sourcedoc=%7B871975D5-92F2-4350-AB1F-29C562BF3B0E%7D&file=Panduan%20Pengajuan%20Merek%20-%20Polibatam.docx&action=default&mobileredirect=true",
     },
     {
       id: "desain-industri",
@@ -147,13 +133,7 @@ export default function DashboardDosenInventor({ user, onLogout }) {
       subJudul: "Bentuk, Komposisi Garis/Warna, Rancangan Produk & Mebel",
       icon: Layers,
       color: "bg-purple-50 text-purple-600 border-purple-200",
-      badgeColor: "bg-purple-100 text-purple-700",
-      syarat: [
-        "Gambar Desain 7 Tampak (Depan, Belakang, Samping Kiri-Kanan, Atas, Bawah, Perspektif)",
-        "Uraian / Buka Desain Industri & Kegunaan Produk",
-        "Surat Pernyataan Kebaharuan Desain Industri",
-        "Surat Pengalihan Hak Desain ke Politeknik Negeri Batam",
-      ],
+      link: "https://polbat-my.sharepoint.com/personal/sentrahki_polibatam_ac_id/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fsentrahki%5Fpolibatam%5Fac%5Fid%2FDocuments%2F00%20DOKUMEN%20SentralAkses%5FPUBLIC%20SHARE%2F02%20PANDUAN%20TEKNIS%20PENDAFTARAN%20KI%20INTERNAL%20SIMP3M%2F03%20DESAIN%20INDUSTRI&viewid=6b665f33%2Dc0b1%2D41cb%2Db12c%2D521c07e17b90&ga=1",
     },
     {
       id: "dtlst",
@@ -161,13 +141,7 @@ export default function DashboardDosenInventor({ user, onLogout }) {
       subJudul: "Rancangan Layout Tiga Dimensi Sirkuit Elektronika & Microchip",
       icon: Sparkles,
       color: "bg-pink-50 text-pink-600 border-pink-200",
-      badgeColor: "bg-pink-100 text-pink-700",
-      syarat: [
-        "Salinan Gambar Tata Letak Sirkuit Terpadu / Layout PCB Detail",
-        "Uraian Fungsi & Spesifikasi Teknis Sirkuit Terpadu",
-        "Keterangan Tanggal Pertama Kali Dieksploitasi Secara Komersial",
-        "Surat Kepemilikan Hak DTLST dari Inventor",
-      ],
+      link: "https://polbat-my.sharepoint.com/personal/sentrahki_polibatam_ac_id/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fsentrahki%5Fpolibatam%5Fac%5Fid%2FDocuments%2F00%20DOKUMEN%20SentralAkses%5FPUBLIC%20SHARE%2F02%20PANDUAN%20TEKNIS%20PENDAFTARAN%20KI%20INTERNAL%20SIMP3M%2F04%20DTLST&viewid=6b665f33%2Dc0b1%2D41cb%2Db12c%2D521c07e17b90&ga=1",
     },
   ];
 
@@ -215,7 +189,7 @@ export default function DashboardDosenInventor({ user, onLogout }) {
                     </button>
                   </div>
 
-                  {/* KARTU STATISTIK RINGKASAN (TERHUBUNG DINAMIS KE DATA SEBENARNYA) */}
+                  {/* KARTU STATISTIK RINGKASAN */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
                       <div className="flex items-center justify-between">
@@ -287,13 +261,19 @@ export default function DashboardDosenInventor({ user, onLogout }) {
                           Panduan Lengkap Kategori Kekayaan Intelektual (KI)
                         </h3>
                         <p className="text-xs text-slate-500 mt-0.5">
-                          Persyaratan kelengkapan berkas dokumen pendukung
-                          sebelum mengajukan usulan ke Sentra HKI Polibatam.
+                          Klik tautan di bawah untuk melihat dokumen panduan
+                          teknis pendaftaran dari setiap kategori KI.
                         </p>
                       </div>
-                      <span className="hidden sm:inline-block px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg border border-blue-100">
-                        Standar Polibatam
-                      </span>
+                      <a
+                        href={sharepointPanduanUtamaUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-lg border border-blue-200 transition cursor-pointer"
+                      >
+                        Link Panduan Lengkap{" "}
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -305,12 +285,7 @@ export default function DashboardDosenInventor({ user, onLogout }) {
                             className={`p-5 rounded-2xl border transition-all duration-200 hover:shadow-md flex flex-col justify-between ${item.color}`}
                           >
                             <div>
-                              <div className="flex items-center justify-between mb-2">
-                                <span
-                                  className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider ${item.badgeColor}`}
-                                >
-                                  Panduan Resmi
-                                </span>
+                              <div className="flex items-center justify-end mb-2">
                                 <IconComponent className="w-5 h-5" />
                               </div>
                               <h4 className="font-bold text-sm text-slate-900 mt-1">
@@ -319,37 +294,26 @@ export default function DashboardDosenInventor({ user, onLogout }) {
                               <p className="text-[11px] text-slate-600 mt-0.5 leading-snug">
                                 {item.subJudul}
                               </p>
-
-                              <div className="mt-4 pt-3 border-t border-slate-200/60">
-                                <p className="text-[11px] font-bold text-slate-800 mb-2 flex items-center gap-1">
-                                  <FileCheck2 className="w-3.5 h-3.5 text-slate-600" />
-                                  Syarat Dokumen Wajib:
-                                </p>
-                                <ul className="space-y-1.5 text-[11px] text-slate-700">
-                                  {item.syarat.map((syr, idx) => (
-                                    <li
-                                      key={idx}
-                                      className="flex items-start gap-1.5"
-                                    >
-                                      <span className="text-blue-600 font-bold">
-                                        •
-                                      </span>
-                                      <span className="leading-tight">
-                                        {syr}
-                                      </span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
                             </div>
 
-                            <button
-                              onClick={() => navigate("/dosen/pengajuan")}
-                              className="mt-4 w-full py-2 bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs rounded-xl border border-slate-200 transition shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer"
-                            >
-                              Ajukan Kategori Ini{" "}
-                              <ArrowRight className="w-3.5 h-3.5" />
-                            </button>
+                            <div className="mt-6 space-y-2">
+                              <a
+                                href={item.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs rounded-xl border border-blue-200 transition shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer"
+                              >
+                                Lihat Link Panduan KI{" "}
+                                <ExternalLink className="w-3.5 h-3.5" />
+                              </a>
+                              <button
+                                onClick={() => navigate("/dosen/pengajuan")}
+                                className="w-full py-2 bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs rounded-xl border border-slate-200 transition shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer"
+                              >
+                                Ajukan Kategori Ini{" "}
+                                <ArrowRight className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </div>
                         );
                       })}

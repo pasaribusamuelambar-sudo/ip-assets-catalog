@@ -16,6 +16,8 @@ import {
   FileArchive,
   ChevronDown,
   ShieldCheck,
+  ExternalLink,
+  MessageSquareWarning,
 } from "lucide-react";
 
 export default function KelolaAsetKI() {
@@ -39,18 +41,15 @@ export default function KelolaAsetKI() {
         regNumber: "MEREK-2026-104",
         regDate: "2026-10-20",
         status: "Ditolak",
+        catatanRevisi:
+          "Mohon lampirkan surat pernyataan bermaterai yang sesuai standar.",
         isPublic: false,
         sertifikatTerbit: false,
-        berkas: { namaFile: "IP_ASSETS_CATALOG.pdf", url: "#" },
+        berkas: { namaFile: "Form_Permohonan_Merek.pdf", url: "#" },
         lampiranDetail: {
-          labelLogo: { name: "IP_ASSETS_CATALOG.pdf", url: "#" },
-          formMerek: { name: "IP_ASSETS_CATALOG.pdf", url: "#" },
-          suratPernyataan: { name: "IP_ASSETS_CATALOG.pdf", url: "#" },
-          suratPengalihan: { name: "Tugas_Mandiri_1(1).pdf", url: "#" },
-          identitasPemohon: {
-            name: "Rekap_Presensi_September_2026(1).pdf",
-            url: "#",
-          },
+          labelLogo: { name: "Logo_Polibatam_Sample.pdf", url: "#" },
+          formMerek: { name: "Form_Permohonan_Merek.pdf", url: "#" },
+          suratPernyataan: { name: "Surat_Pernyataan_Merek.pdf", url: "#" },
         },
       },
       {
@@ -63,37 +62,13 @@ export default function KelolaAsetKI() {
         regNumber: "EC00202612345",
         regDate: "2026-10-20",
         status: "Terdaftar",
+        catatanRevisi: "",
         isPublic: true,
         sertifikatTerbit: true,
         berkas: { namaFile: "Logo_Polibatam.pdf", url: "#" },
-      },
-      {
-        id: "KI-2026-784",
-        title: "Game Bola digital",
-        category: "Hak Cipta",
-        subCategory: "Program Komputer / Software",
-        inventor: "Cristiano Ronaldo, S.T",
-        jurusan: "Teknik Elektro",
-        regNumber: "-",
-        regDate: "2026-10-20",
-        status: "Ditolak",
-        isPublic: false,
-        sertifikatTerbit: false,
-        berkas: { namaFile: "Game_Bola.pdf", url: "#" },
-      },
-      {
-        id: "KT-2026-617",
-        title: "Desain Tata Letak Sirkuit Terpadu...",
-        category: "DTLST",
-        subCategory: "Tata Letak Chip Mikroprosesor & Pengendali",
-        inventor: "Ir Jokowi",
-        jurusan: "Teknik Elektro",
-        regNumber: "DTLST-2026-08",
-        regDate: "2026-10-20",
-        status: "Terdaftar",
-        isPublic: true,
-        sertifikatTerbit: true,
-        berkas: { namaFile: "DTLST_Chip.pdf", url: "#" },
+        lampiranDetail: {
+          suratPernyataan: { name: "Logo_Polibatam.pdf", url: "#" },
+        },
       },
     ];
   });
@@ -102,10 +77,7 @@ export default function KelolaAsetKI() {
     localStorage.setItem("polibatam_kelola_aset_ki", JSON.stringify(assets));
   }, [assets]);
 
-  // Mode Tampilan Dropdown di Banner Atas
-  const [viewMode, setViewMode] = useState("status_ki"); // Options: "status_ki" | "berkas_lengkap"
-
-  // Filter States
+  const [viewMode, setViewMode] = useState("status_ki");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [selectedStatus, setSelectedStatus] = useState("Semua");
@@ -114,10 +86,12 @@ export default function KelolaAsetKI() {
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Modal State
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [activeDropdown, setActiveDropdown] = useState(null);
+
+  const [alasanRevisiInput, setAlasanRevisiInput] = useState("");
+  const [showRevisiModal, setShowRevisiModal] = useState(false);
 
   const categories = [
     "Hak Cipta",
@@ -135,7 +109,6 @@ export default function KelolaAsetKI() {
   ];
   const years = ["2026", "2025", "2024", "2023"];
 
-  // Pengaturan Privasi Publikasi (Publik / Privat)
   const handleTogglePrivacy = (id) => {
     const updated = assets.map((a) =>
       a.id === id ? { ...a, isPublic: !a.isPublic } : a,
@@ -143,17 +116,17 @@ export default function KelolaAsetKI() {
     setAssets(updated);
   };
 
-  // Pemberian Sertifikat Otomatis saat Berkas Lengkap / Status Disetujui
-  const handleUpdateStatus = (id, newStatus) => {
+  const handleUpdateStatusWithNote = (id, newStatus, catatan = "") => {
     const updated = assets.map((a) => {
       if (a.id === id) {
         const isApproved = newStatus === "Terdaftar";
         return {
           ...a,
           status: newStatus,
+          catatanRevisi: catatan,
           sertifikatTerbit: isApproved,
           regNumber: isApproved
-            ? a.regNumber !== "-"
+            ? a.regNumber !== "-" && a.regNumber !== "MENUNGGU_VALIDASI"
               ? a.regNumber
               : `REG-${Date.now().toString().slice(-8)}`
             : "-",
@@ -163,6 +136,8 @@ export default function KelolaAsetKI() {
     });
     setAssets(updated);
     setActiveDropdown(null);
+    setShowRevisiModal(false);
+    setAlasanRevisiInput("");
   };
 
   const handleDelete = (id) => {
@@ -172,7 +147,6 @@ export default function KelolaAsetKI() {
     setActiveDropdown(null);
   };
 
-  // Unduh Berkas ZIP setelah Direview pada Modal
   const handleDownloadZipPackage = (asset) => {
     const cleanName = asset.inventor.replace(/[^a-zA-Z0-9]/g, "_");
     const zipFileName = `[ZIP]_Review_Berkas_${asset.id}_${cleanName}.zip`;
@@ -189,13 +163,22 @@ export default function KelolaAsetKI() {
     alert(`Mengunduh Berkas ZIP Hasil Review:\n${zipFileName}`);
   };
 
+  // Fungsi Permanen untuk Membuka File Base64 atau Tautan Eksternal
   const handleOpenFile = (fileObj) => {
-    alert(
-      `Pratinjau Berkas: ${fileObj?.name || fileObj?.namaFile || "Dokumen.pdf"}`,
-    );
+    if (fileObj?.url && fileObj.url.startsWith("data:")) {
+      const win = window.open();
+      win.document.write(
+        `<iframe src="${fileObj.url}" frameborder="0" style="border:0; top:0; left:0; bottom:0; right:0; width:100%; height:100%;" allowfullscreen></iframe>`,
+      );
+    } else if (fileObj?.url && fileObj.url !== "#") {
+      window.open(fileObj.url, "_blank");
+    } else {
+      alert(
+        `File "${fileObj?.name || fileObj?.namaFile || "Dokumen"}" adalah data sampel default. Silakan unggah berkas baru melalui form pengajuan Dosen.`,
+      );
+    }
   };
 
-  // Filtering Logic
   const filteredAssets = assets.filter((asset) => {
     const matchesSearch =
       asset.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -231,7 +214,6 @@ export default function KelolaAsetKI() {
 
   return (
     <div className="space-y-6 text-slate-800 font-sans">
-      {/* BANNER HEADER DENGAN DROPDOWN SESUAI TANDA MERAH */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
@@ -244,7 +226,6 @@ export default function KelolaAsetKI() {
           </p>
         </div>
 
-        {/* DROPDOWN PILIHAN TAMPILAN SESUAI PERMINTAAN TANDA MERAH */}
         <div className="relative flex-shrink-0">
           <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 px-3.5 py-2 rounded-xl text-xs font-bold text-blue-700 shadow-xs">
             <span>Tampilan Mode:</span>
@@ -253,7 +234,7 @@ export default function KelolaAsetKI() {
               onChange={(e) => setViewMode(e.target.value)}
               className="bg-transparent font-extrabold text-blue-900 focus:outline-none cursor-pointer pr-1"
             >
-              <option value="status_ki">1. Status KI</option>
+              <option value="status_ki">1. Status KI & Revisi</option>
               <option value="berkas_lengkap">
                 2. Berkas Lengkap & Sertifikat
               </option>
@@ -263,7 +244,6 @@ export default function KelolaAsetKI() {
         </div>
       </div>
 
-      {/* FILTER PENCARIAN */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
@@ -359,27 +339,25 @@ export default function KelolaAsetKI() {
         </div>
       </div>
 
-      {/* TABEL UTAMA ASET KI */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
         <div className="overflow-x-auto min-h-[300px]">
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200">
               <tr>
-                <th className="p-4">ID KI</th>
-                <th className="p-4">Tanggal Di Ajukan</th>
-                <th className="p-4">Judul Asset KI</th>
+                <th className="p-4">ID</th>
+                <th className="p-4">Tanggal Diajukan</th>
+                <th className="p-4">Judul KI</th>
                 <th className="p-4">Kategori KI</th>
-                <th className="p-4">Nama Dosen Inventor & Jurusan</th>
+                <th className="p-4">Nama & Jurusan</th>
                 <th className="p-4 text-center">Dokumen KI</th>
                 <th className="p-4">Jenis & Sub Ciptaan KI</th>
 
-                {/* DYNAMIC HEADER BERDASARKAN DROPDOWN BANNER */}
                 {viewMode === "status_ki" ? (
-                  <th className="p-4">Status KI</th>
+                  <th className="p-4">Status & Catatan Revisi</th>
                 ) : (
                   <>
-                    <th className="p-4">Berkas & Sertifikat Dosen</th>
-                    <th className="p-4 text-center">Akses Masyarakat</th>
+                    <th className="p-4">Sertifikat</th>
+                    <th className="p-4 text-center">Kelola Akses</th>
                   </>
                 )}
 
@@ -421,7 +399,6 @@ export default function KelolaAsetKI() {
                       </p>
                     </td>
 
-                    {/* DOKUMEN KI: HANYA ADA 1 TOMBOL "LIHAT" (TANPA UNDUH BERTUMPUK) */}
                     <td className="p-4 whitespace-nowrap text-center">
                       <button
                         onClick={() => {
@@ -439,9 +416,8 @@ export default function KelolaAsetKI() {
                       {asset.subCategory || "Program Komputer / Software"}
                     </td>
 
-                    {/* MODE TAMPILAN 1: STATUS KI */}
                     {viewMode === "status_ki" && (
-                      <td className="p-4 whitespace-nowrap">
+                      <td className="p-4 space-y-1">
                         <span
                           className={`px-2.5 py-1 rounded-full text-[10px] font-semibold inline-flex items-center gap-1 ${
                             asset.status === "Terdaftar"
@@ -462,10 +438,14 @@ export default function KelolaAsetKI() {
                           )}
                           {asset.status}
                         </span>
+                        {asset.status === "Ditolak" && asset.catatanRevisi && (
+                          <p className="text-[10px] text-rose-600 italic font-medium">
+                            Catatan: {asset.catatanRevisi}
+                          </p>
+                        )}
                       </td>
                     )}
 
-                    {/* MODE TAMPILAN 2: BERKAS LENGKAP & SERTIFIKAT DOSEN */}
                     {viewMode === "berkas_lengkap" && (
                       <>
                         <td className="p-4 whitespace-nowrap">
@@ -519,7 +499,11 @@ export default function KelolaAsetKI() {
                             <div className="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-slate-200 z-20 py-1 text-left">
                               <button
                                 onClick={() =>
-                                  handleUpdateStatus(asset.id, "Terdaftar")
+                                  handleUpdateStatusWithNote(
+                                    asset.id,
+                                    "Terdaftar",
+                                    "",
+                                  )
                                 }
                                 className="w-full px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 flex items-center gap-1.5 cursor-pointer"
                               >
@@ -527,13 +511,18 @@ export default function KelolaAsetKI() {
                                 Lengkap (Beri Sertifikat)
                               </button>
                               <button
-                                onClick={() =>
-                                  handleUpdateStatus(asset.id, "Ditolak")
-                                }
+                                onClick={() => {
+                                  setSelectedAsset(asset);
+                                  setAlasanRevisiInput(
+                                    asset.catatanRevisi || "",
+                                  );
+                                  setShowRevisiModal(true);
+                                  setActiveDropdown(null);
+                                }}
                                 className="w-full px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 flex items-center gap-1.5 cursor-pointer"
                               >
-                                <XCircle className="w-3.5 h-3.5" /> Ditolak /
-                                Belum Lengkap
+                                <MessageSquareWarning className="w-3.5 h-3.5" />{" "}
+                                Ditolak / Perlu Revisi
                               </button>
                             </div>
                           )}
@@ -560,7 +549,6 @@ export default function KelolaAsetKI() {
           </table>
         </div>
 
-        {/* PAGINATION FOOTER */}
         <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
           <span className="text-slate-500">
             Menampilkan {filteredAssets.length > 0 ? indexOfFirstEntry + 1 : 0}{" "}
@@ -591,7 +579,58 @@ export default function KelolaAsetKI() {
         </div>
       </div>
 
-      {/* MODAL PRATINJAU REVIEW & UNDUH ZIP */}
+      {showRevisiModal && selectedAsset && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4 text-xs">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+              <h3 className="font-bold text-slate-800 text-sm flex items-center gap-1.5 text-rose-600">
+                <MessageSquareWarning className="w-4 h-4" /> Catatan Penolakan /
+                Revisi Berkas
+              </h3>
+              <button
+                onClick={() => setShowRevisiModal(false)}
+                className="text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div>
+              <p className="text-slate-600 mb-2">
+                Masukkan instruksi atau catatan perbaikan berkas untuk judul:{" "}
+                <span className="font-bold">{selectedAsset.title}</span>
+              </p>
+              <textarea
+                rows="4"
+                value={alasanRevisiInput}
+                onChange={(e) => setAlasanRevisiInput(e.target.value)}
+                placeholder="Contoh: Scan KTP kurang jelas / Surat Pernyataan belum bermaterai..."
+                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"
+              ></textarea>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                onClick={() => setShowRevisiModal(false)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                onClick={() =>
+                  handleUpdateStatusWithNote(
+                    selectedAsset.id,
+                    "Ditolak",
+                    alasanRevisiInput,
+                  )
+                }
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl cursor-pointer"
+              >
+                Simpan & Ubah Status ke Ditolak
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isDetailOpen && selectedAsset && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-xl border border-slate-100 space-y-4 text-xs max-h-[90vh] overflow-y-auto">
@@ -627,7 +666,6 @@ export default function KelolaAsetKI() {
                 <strong>Status:</strong> {selectedAsset.status}
               </p>
 
-              {/* REVIEW LAMPIRAN BERKAS */}
               <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
                 <p className="font-bold text-slate-800 text-sm border-b border-slate-200 pb-2">
                   Daftar Berkas & Lampiran Wajib Kategori (
@@ -655,9 +693,9 @@ export default function KelolaAsetKI() {
                             </div>
                             <button
                               onClick={() => handleOpenFile(fileObj)}
-                              className="px-2.5 py-1 bg-blue-50 text-blue-700 font-bold rounded hover:bg-blue-100 text-[10px] cursor-pointer"
+                              className="px-2.5 py-1 bg-blue-50 text-blue-700 font-bold rounded hover:bg-blue-100 text-[10px] cursor-pointer inline-flex items-center gap-1"
                             >
-                              Lihat
+                              <ExternalLink className="w-3 h-3" /> Buka File
                             </button>
                           </div>
                         ) : null,
@@ -665,12 +703,12 @@ export default function KelolaAsetKI() {
                   </div>
                 ) : (
                   <p className="text-slate-500 italic">
-                    Tidak ada lampiran detail tambahan.
+                    Tidak ada lampiran detail tambahan yang tersimpan pada data
+                    ini.
                   </p>
                 )}
               </div>
 
-              {/* SERTIFIKAT DIBERIKAN KE DOSEN */}
               {selectedAsset.sertifikatTerbit && (
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between">
                   <span className="font-bold text-emerald-800 flex items-center gap-1.5">
@@ -680,7 +718,6 @@ export default function KelolaAsetKI() {
                 </div>
               )}
 
-              {/* TOMBOL UNDUH ZIP DI MODAL SETELAH REVIEW */}
               <div className="pt-2">
                 <button
                   onClick={() => handleDownloadZipPackage(selectedAsset)}
@@ -695,16 +732,17 @@ export default function KelolaAsetKI() {
             <div className="pt-3 border-t border-slate-100 flex justify-end gap-2">
               <button
                 onClick={() => {
-                  handleUpdateStatus(selectedAsset.id, "Ditolak");
                   setIsDetailOpen(false);
+                  setAlasanRevisiInput(selectedAsset.catatanRevisi || "");
+                  setShowRevisiModal(true);
                 }}
                 className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-xl cursor-pointer"
               >
-                Ubah Status: Ditolak
+                Ubah Status: Ditolak / Revisi
               </button>
               <button
                 onClick={() => {
-                  handleUpdateStatus(selectedAsset.id, "Terdaftar");
+                  handleUpdateStatusWithNote(selectedAsset.id, "Terdaftar", "");
                   setIsDetailOpen(false);
                 }}
                 className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl cursor-pointer"

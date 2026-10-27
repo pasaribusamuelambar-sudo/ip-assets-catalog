@@ -11,25 +11,38 @@ export default function MinatLisensi() {
         console.error("Gagal membaca data minat lisensi", e);
       }
     }
-    // Data bawaan awal[cite: 44]
+    // Data bawaan awal
     return [
       {
         id: 1,
+        namaMitra: "Polibatam",
+        pic: "SAMUEL AMBAR PASARIBU",
+        email: "pasaribusamuelambar@gmail.com",
+        asetDiinginkan: "Logo Polibatam angkatan 25",
+        kategoriKI: "Merek / Hak Cipta",
+        pesan: "sangat bagus saya ingin bekerja sama",
+        tanggal: "21 Okt 2026",
+        status: "Sudah Ditanggapi",
+      },
+      {
+        id: 2,
         namaMitra: "PT Teknologi Batam Mandiri",
         pic: "Ir. Haryanto, M.Eng",
         email: "haryanto@batam-tech.co.id",
         asetDiinginkan: "Sistem Presensi Deteksi Wajah Real-Time",
+        kategoriKI: "Hak Cipta",
         pesan:
           "Kami tertarik untuk mengkomersialkan teknologi presensi ini untuk kebutuhan pabrik manufaktur kami.",
         tanggal: "02 Okt 2026",
         status: "Menunggu Tanggapan",
       },
       {
-        id: 2,
+        id: 3,
         namaMitra: "CV Inovasi Kreatif Nusantara",
         pic: "Siti Aminah, S.Kom",
         email: "siti@inovasi.id",
         asetDiinginkan: "Alat Pengering Ikan Otomatis Berbasis IoT",
+        kategoriKI: "Paten Sederhana",
         pesan:
           "Ingin berdiskusi terkait skema lisensi produksi massal alat pengering ikan.",
         tanggal: "28 Sep 2026",
@@ -38,7 +51,7 @@ export default function MinatLisensi() {
     ];
   });
 
-  // Sinkronkan ke localStorage[cite: 44]
+  // Sinkronkan ke localStorage
   useEffect(() => {
     localStorage.setItem(
       "polibatam_minat_lisensi",
@@ -46,7 +59,7 @@ export default function MinatLisensi() {
     );
   }, [inquiryList]);
 
-  // Fungsi membalas Email ke Mitra Industri[cite: 44]
+  // Fungsi membalas Email ke Mitra Industri
   const handleBalasEmail = (item) => {
     const subject = encodeURIComponent(
       `Tanggapan Kerjasama Lisensi Aset KI: ${item.asetDiinginkan}`,
@@ -98,6 +111,7 @@ export default function MinatLisensi() {
               <tr>
                 <th className="p-4">Mitra Industri / PIC</th>
                 <th className="p-4">Aset KI yang Diminati</th>
+                <th className="p-4">Kategori KI</th>
                 <th className="p-4">Pesan Inquiry</th>
                 <th className="p-4">Tanggal</th>
                 <th className="p-4">Status</th>
@@ -115,6 +129,11 @@ export default function MinatLisensi() {
                   </td>
                   <td className="p-4 font-semibold text-slate-700">
                     {item.asetDiinginkan}
+                  </td>
+                  <td className="p-4">
+                    <span className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200/60 inline-block">
+                      {item.kategoriKI || "Hak Cipta"}
+                    </span>
                   </td>
                   <td className="p-4 text-slate-600 max-w-xs truncate">
                     {item.pesan}

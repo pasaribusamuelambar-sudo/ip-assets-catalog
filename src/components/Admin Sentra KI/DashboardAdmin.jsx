@@ -27,10 +27,6 @@ import {
 
 // Import Icon dari Lucide React
 import {
-  Award,
-  FileCheck,
-  Building2,
-  Layers,
   Clock,
   CheckCircle2,
   XCircle,
@@ -390,77 +386,7 @@ export default function DashboardAdmin({ onLogout }) {
                     </div>
                   </div>
 
-                  {/* KARTU STATISTIK UTAMA */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-                      <p className="text-xs font-medium text-slate-500">
-                        Total Aset KI
-                      </p>
-                      <p className="text-2xl font-bold text-slate-800 mt-1">
-                        {stats.totalAsetKI}
-                      </p>
-                      <span className="text-[10px] text-emerald-600 font-medium">
-                        Aktif
-                      </span>
-                    </div>
-                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-                      <p className="text-xs font-medium text-slate-500">
-                        Hak Cipta
-                      </p>
-                      <p className="text-2xl font-bold text-blue-600 mt-1">
-                        {stats.totalHakCipta}
-                      </p>
-                      <span className="text-[10px] text-slate-400">
-                        Kategori 1
-                      </span>
-                    </div>
-                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-                      <p className="text-xs font-medium text-slate-500">
-                        Merek
-                      </p>
-                      <p className="text-2xl font-bold text-amber-600 mt-1">
-                        {stats.totalMerek}
-                      </p>
-                      <span className="text-[10px] text-slate-400">
-                        Kategori 2
-                      </span>
-                    </div>
-                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-                      <p className="text-xs font-medium text-slate-500">
-                        Paten
-                      </p>
-                      <p className="text-2xl font-bold text-emerald-600 mt-1">
-                        {stats.totalPaten}
-                      </p>
-                      <span className="text-[10px] text-slate-400">
-                        Kategori 3
-                      </span>
-                    </div>
-                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-                      <p className="text-xs font-medium text-slate-500">
-                        Desain Industri
-                      </p>
-                      <p className="text-2xl font-bold text-purple-600 mt-1">
-                        {stats.totalDesain}
-                      </p>
-                      <span className="text-[10px] text-slate-400">
-                        Kategori 4
-                      </span>
-                    </div>
-                    <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
-                      <p className="text-xs font-medium text-slate-500">
-                        DTLST
-                      </p>
-                      <p className="text-2xl font-bold text-pink-600 mt-1">
-                        {stats.totalDtlst}
-                      </p>
-                      <span className="text-[10px] text-slate-400">
-                        Kategori 5
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* STATISTIK STATUS PENGAJUAN KI (URUTAN SESUAI PERMINTAAN) */}
+                  {/* STATISTIK STATUS PENGAJUAN KI */}
                   <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-4">
                       <div>
@@ -848,7 +774,11 @@ export default function DashboardAdmin({ onLogout }) {
                               </td>
                               <td className="p-3">
                                 <span
-                                  className={`px-2.5 py-1 rounded-full text-[10px] font-semibold ${sub.status === "Terdaftar" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}
+                                  className={`px-2.5 py-1 rounded-full text-[10px] font-semibold ${
+                                    sub.status === "Terdaftar"
+                                      ? "bg-emerald-100 text-emerald-700"
+                                      : "bg-amber-100 text-amber-700"
+                                  }`}
                                 >
                                   {sub.status}
                                 </span>

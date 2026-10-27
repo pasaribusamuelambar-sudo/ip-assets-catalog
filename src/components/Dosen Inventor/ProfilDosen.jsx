@@ -32,7 +32,7 @@ export default function ProfilDosen() {
       nama: "Samuel Ambar Pasaribu, M.Kom.",
       email: "pasaribusamuelambar@gmail.com",
       jurusan: "Teknik Informatika",
-      role: "Dosen / Inventor",
+      role: "Dosen Inventor",
       status: "Aktif",
       passwordTerakhir: "12345678",
       riwayatPassword: [{ tanggal: "2026-01-01", status: "Dibuat Sistem" }],
@@ -123,7 +123,7 @@ export default function ProfilDosen() {
                 {currentUser.nama}
               </h3>
               <p className="text-xs text-blue-400 font-bold font-mono">
-                ID Dosen / NIP: {currentUser.id}
+                ID Dosen NIP: {currentUser.id}
               </p>
               <div className="flex items-center gap-2 pt-1">
                 <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full text-[10px] font-bold border border-emerald-500/30">
@@ -153,7 +153,7 @@ export default function ProfilDosen() {
               </span>
               <p className="font-bold text-slate-200 text-sm">
                 {currentUser.jurusan} — Politeknik Negeri Batam
-              </p>
+              </p>  
             </div>
 
             <div className="p-4 bg-slate-800/60 rounded-xl border border-slate-700/60 space-y-1 md:col-span-2">

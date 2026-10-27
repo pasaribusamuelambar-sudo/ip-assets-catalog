@@ -40,10 +40,16 @@ export default function PengajuanHki() {
     "Teknik Sipil",
   ];
 
-  // Mengubah file fisik menjadi Base64 string agar aman disimpan & dibaca admin
+  // Mengubah file menjadi Base64 agar tersimpan secara permanen di localStorage
   const handleFileChange = (e, key) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert(
+          "Ukuran file terlalu besar! Harap unggah file di bawah 2 MB agar dapat tersimpan permanen di penyimpanan lokal.",
+        );
+        return;
+      }
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData((prev) => ({
@@ -53,7 +59,7 @@ export default function PengajuanHki() {
             [key]: {
               name: file.name,
               size: (file.size / (1024 * 1024)).toFixed(2) + " MB",
-              url: reader.result, // Base64 URL permanen
+              url: reader.result, // Base64 permanen
             },
           },
         }));
@@ -104,9 +110,10 @@ export default function PengajuanHki() {
       regNumber: "MENUNGGU_VALIDASI",
       regDate: new Date().toISOString().split("T")[0],
       status: "Dalam Proses",
+      catatanRevisi: "",
       deskripsi: formData.deskripsi,
       berkas: berkasKarya,
-      lampiranDetail: b, // Menyimpan seluruh detail file Base64 per kategori
+      lampiranDetail: b,
       kontak: {
         email: formData.email,
         whatsapp: formData.noWhatsapp,
@@ -144,7 +151,7 @@ export default function PengajuanHki() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       alert(
-        "Gagal menyimpan data ke storage. Ukuran file mungkin terlalu besar.",
+        "Gagal menyimpan data ke storage. Kapasitas penyimpanan browser penuh.",
       );
     }
   };

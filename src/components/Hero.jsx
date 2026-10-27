@@ -49,12 +49,12 @@ export default function Hero({ isLightTheme }) {
     return () => clearInterval(timer);
   }, [sliderImages.length]);
 
+  // DAFTAR 5 KATEGORI KI UTAMA SESUAI RPP (MENGHAPUS SOFTWARE)
   const ipCategories = [
     "Hak Cipta",
     "Paten",
     "Merek",
     "Desain Industri",
-    "Software",
     "DTLST",
   ];
 
@@ -84,7 +84,36 @@ export default function Hero({ isLightTheme }) {
       year: "2026",
       status: "Terdaftar (Publik)",
     },
+    {
+      id: "KI-2026-004",
+      title: "Alat Pengering Ikan Otomatis Berbasis IoT Energi Surya",
+      type: "Paten",
+      creator: "Rina Wijaya, S.T., M.Sc.",
+      year: "2026",
+      status: "Terdaftar (Publik)",
+    },
+    {
+      id: "KI-2026-005",
+      title: "Tata Letak Sirkuit Terpadu Modul Sensor Smart Grid",
+      type: "DTLST",
+      creator: "Tim Laboratorium Elektronika Polibatam",
+      year: "2026",
+      status: "Terdaftar (Publik)",
+    },
   ];
+
+  // LOGIKA PENCARIAN & FILTER KATEGORI KI
+  const filteredAssets = dummyAssets.filter((asset) => {
+    const matchesSearch =
+      asset.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      asset.creator.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      asset.id.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesCategory =
+      selectedCategory === "Semua" || asset.type === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
 
   const handleOpenLicenceModal = (asset) => {
     setSelectedAssetForLicence(asset);
@@ -225,7 +254,7 @@ export default function Hero({ isLightTheme }) {
         </div>
       </section>
 
-      {/* Filter Kategori */}
+      {/* FILTER BERDASARKAN JENIS KI (SESUAI LINGKARAN MERAH) */}
       <section
         className={`py-6 px-6 border-y ${
           isLightTheme
@@ -273,7 +302,7 @@ export default function Hero({ isLightTheme }) {
         </div>
       </section>
 
-      {/* Grid Katalog Aset Publik */}
+      {/* Grid Katalog Aset Publik (Terfilter Otomatis) */}
       <section className="py-16 px-6 max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -289,51 +318,57 @@ export default function Hero({ isLightTheme }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {dummyAssets.map((asset) => (
-            <div
-              key={asset.id}
-              className={`border rounded-2xl p-6 flex flex-col justify-between transition duration-300 shadow-md ${
-                isLightTheme
-                  ? "bg-white border-slate-200 hover:border-emerald-500"
-                  : "bg-[#140d24] border-purple-900/40 hover:border-emerald-500/50"
-              }`}
-            >
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-xs px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-600 font-bold">
-                    {asset.type}
-                  </span>
-                  <span className="text-xs text-slate-400">{asset.year}</span>
-                </div>
-                <h3 className="font-semibold text-lg leading-snug">
-                  {asset.title}
-                </h3>
-                <p
-                  className={`mt-3 text-xs ${
-                    isLightTheme ? "text-slate-600" : "text-slate-300"
-                  }`}
-                >
-                  <strong>Pencipta / Inventor:</strong> {asset.creator}
-                </p>
-              </div>
-
-              {/* AREA TOMBOL AJUKAN MINAT LISENSI SINKRON UNTUK MASYARAKAT */}
-              <div className="mt-6 pt-4 border-t border-slate-200/40 flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300 font-bold">
-                    ✓ {asset.status}
-                  </span>
+          {filteredAssets.length > 0 ? (
+            filteredAssets.map((asset) => (
+              <div
+                key={asset.id}
+                className={`border rounded-2xl p-6 flex flex-col justify-between transition duration-300 shadow-md ${
+                  isLightTheme
+                    ? "bg-white border-slate-200 hover:border-emerald-500"
+                    : "bg-[#140d24] border-purple-900/40 hover:border-emerald-500/50"
+                }`}
+              >
+                <div>
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-xs px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-600 font-bold">
+                      {asset.type}
+                    </span>
+                    <span className="text-xs text-slate-400">{asset.year}</span>
+                  </div>
+                  <h3 className="font-semibold text-lg leading-snug">
+                    {asset.title}
+                  </h3>
+                  <p
+                    className={`mt-3 text-xs ${
+                      isLightTheme ? "text-slate-600" : "text-slate-300"
+                    }`}
+                  >
+                    <strong>Pencipta / Inventor:</strong> {asset.creator}
+                  </p>
                 </div>
 
-                <button
-                  onClick={() => handleOpenLicenceModal(asset)}
-                  className="w-full mt-2 py-2 bg-gradient-to-r from-blue-600 to-emerald-600 hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer flex items-center justify-center gap-1.5"
-                >
-                  ✉ Ajukan Minat Lisensi / Kerjasama
-                </button>
+                {/* AREA TOMBOL AJUKAN MINAT LISENSI */}
+                <div className="mt-6 pt-4 border-t border-slate-200/40 flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300 font-bold">
+                      ✓ {asset.status}
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => handleOpenLicenceModal(asset)}
+                    className="w-full mt-2 py-2 bg-gradient-to-r from-blue-600 to-emerald-600 hover:opacity-90 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    ✉ Ajukan Minat Lisensi / Kerjasama
+                  </button>
+                </div>
               </div>
+            ))
+          ) : (
+            <div className="col-span-3 text-center py-12 text-slate-400">
+              Tidak ada aset Kekayaan Intelektual untuk kategori "{selectedCategory}".
             </div>
-          ))}
+          )}
         </div>
       </section>
 

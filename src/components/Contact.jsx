@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import samuelFoto from "../assets/Samuel ambar pasaribu.png";
 import farhanFoto from "../assets/M Hoirul Farhan.png";
+import indahFoto from "../assets/Indah Suci Yanti.png";
 
 export default function Contact({ isLightTheme }) {
   const [formData, setFormData] = useState({
@@ -35,7 +36,7 @@ export default function Contact({ isLightTheme }) {
       wa: "https://wa.me/6281234567892",
       github: "https://github.com/indahsuci",
       instagram: "https://instagram.com/indahsuci",
-      foto: "https://via.placeholder.com/150",
+      foto: indahFoto,
     },
   ];
 

@@ -141,7 +141,7 @@ export default function App() {
           }`}
         >
           © {new Date().getFullYear()} IP Assets Catalog. All rights reserved.
-          Polibatam Sentra HKI 2026
+          Polibatam Sentra KI 2026
         </footer>
       )}
     </div>
